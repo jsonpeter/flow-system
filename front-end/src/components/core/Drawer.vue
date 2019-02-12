@@ -16,7 +16,7 @@
       >
         <v-list-tile avatar>
           <v-list-tile-title class="title">
-           <span style="text-align: center; display: block"> Vuetify MD</span>
+           <span style="text-align: center; display: block">管理后台</span>
           </v-list-tile-title>
         </v-list-tile>
         <v-divider/>
@@ -37,8 +37,8 @@
         </v-list-tile>
         <v-list-tile
                 avatar
-                class="v-list-item"
-        >
+                :active-class="color"
+                class="v-list-item" @click="loginOut">
           <v-list-tile-action>
             <v-icon>mdi-arrow-left</v-icon>
           </v-list-tile-action>
@@ -61,17 +61,17 @@ export default {
       {
         to: '/main/home',
         icon: 'mdi-view-dashboard',
-        text: 'Dashboard'
+        text: '统计报表'
       },
       {
         to: '/table-list',
         icon: 'mdi-clipboard-outline',
-        text: 'Table List'
+        text: '到店人群'
       },
         {
             to: '/user-profile',
             icon: 'mdi-account',
-            text: 'User Profile'
+            text: '商户信息'
         },
       {
         to: '/password',
@@ -110,7 +110,12 @@ export default {
       } else {
         this.responsive = false
       }
-    }
+    },
+      loginOut(){
+        sessionStorage.removeItem('access_token');
+        this.$router.replace({ path: '/login' })
+        console.log('~~')
+      }
   }
 }
 </script>

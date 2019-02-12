@@ -1,7 +1,7 @@
 <template>
     <v-app :dark="inputValue">
         <core-filter />
-        <!--<core-toolbar />-->
+        <core-toolbar />
         <core-drawer />
         <core-view />
     </v-app>

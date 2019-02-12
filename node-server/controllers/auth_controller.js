@@ -8,15 +8,16 @@ const jwt = require('jsonwebtoken');
 module.exports= {
     //admin登陆&创建token
     admin_login: function (req_data, callback) {
-        console.error(req_data)
+
         let {username, password,type} = req_data;
         DBhelper.execute_sql(DBsql.user.admin_login(username, password,type), function (res) {
             let token = '',out_json={success:false,error:'no user'};
             console.error(res.code,res.data)
             if (res.code===0&&res.data.length>0) {
                 let data=res.data;
-                delete data.password;
-
+                delete data[0].password;
+                console.log('~~~~~',data[0].id)
+                DBhelper.execute_sql(DBsql.user.admin_login_log(data[0].id))
                 // 创建token
                 token = jwt.sign({
                     exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1小时过期

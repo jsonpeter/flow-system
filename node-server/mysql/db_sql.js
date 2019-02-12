@@ -10,9 +10,11 @@ module.exports = {
             if (type) {
                 sql = ' and date(now())>=date(start_time) and date(now())<=date(end_time) and status=1 '
             }
-            let str = 'SELECT  *  FROM admin_user where username="' + username + '" and password=MD5("' + password + '") and type=' + type + sql;
-            console.log(str)
-            return str
+            return 'SELECT  *  FROM admin_user where username="' + username + '" and password=MD5("' + password + '") and type=' + type + sql;
+
+        },
+        admin_login_log:function (id) {
+            return 'UPDATE admin_user set `lastTime`=now() where id='+id;
         }
     },
     admin: {
@@ -57,7 +59,7 @@ module.exports = {
                 s_sql = 'count(*) as totals';
             }
             if (_options.limit) {
-                s_sql = 'a.id,a.age,a.beauty,a.gender,a.glasses,a.shape,a.dateTime as firstTime,a.faceId,b.storeId,b.dateTime as lastTime'
+                s_sql = 'a.id,a.age,a.beauty,a.type,a.gender,a.glasses,a.shape,a.dateTime as firstTime,a.faceId,b.storeId,b.dateTime as lastTime'
                 limit = 'limit ' + ((_options.page - 1) * _options.size) + ',' + _options.size;
             }
             //全部人员或今日进入 详情

@@ -1,4 +1,5 @@
 .v-toolbar {
+  display: none;
   min-height: $toolbar-min-height;
   border-radius: $border-radius-base;
   margin-bottom: $margin-general;
@@ -30,6 +31,7 @@
     .v-toolbar__title {
       font-size: $font-size-toolbar-title;
       letter-spacing: unset;
+      text-align: right;
       color: $black-color;
     }
 
@@ -70,7 +72,9 @@
 }
 
 @media all and (max-width: 990px) {
+  .v-toolbar{display: block;}
   .v-toolbar:not(.v-toolbar--fixed) .v-toolbar__content {
+    display: block;
     margin-left: 0;
   }
 }

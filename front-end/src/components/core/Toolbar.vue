@@ -19,7 +19,6 @@
       </v-btn>
       <span class="head-title">{{ title }}</span>
     </v-toolbar-title>
-
   </v-toolbar>
 </template>
 

@@ -59,7 +59,11 @@
       <v-card>
         <v-card-text>
           <v-container style="padding: 0 10px;" grid-list-md>
-            <h3 class="v-title">到店详情</h3>
+            <h3 class="v-title">到店详情
+              <v-btn icon dark @click="dialog = false">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </h3>
             <v-layout wrap>
               <v-flex xs3>
                 <v-badge left>
@@ -106,21 +110,21 @@
                 ></v-text-field>
               </v-flex>
               <v-flex xs12>
-                <v-radio-group  label="标注为：" v-model="radioGroup" row>
+                <v-radio-group  label="标注为：" v-model="personInfo.type" row>
                   <v-radio
 
                           label="黑名单"
-                          value="-1"
+                          value="black"
                   ></v-radio>
                   <v-radio
 
                           label="VIP"
-                          value="1"
+                          value="vip"
                   ></v-radio>
                   <v-radio
 
                           label="普通"
-                          value="0"
+                          value="normal"
                   ></v-radio>
                 </v-radio-group>
 
@@ -129,14 +133,16 @@
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click="dialog = false">Close</v-btn>
-          <v-btn color="blue darken-1" flat @click="dialog = false">Save</v-btn>
+          <v-btn block :color="color"  @click="save">保存</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
   </v-container>
 </template>
+<style scoped>
+  .v-title{position: relative;}
+  .v-title .v-btn{position: absolute; right: -20px;top:-20px;}
+</style>
 <script>
 import { mapMutations,  mapState  } from 'vuex'
 import $http from  '../plugins/axios'
@@ -145,7 +151,6 @@ import * as _utilService from "../utils";
 export default {
     data: () => ({
         utilService:_utilService,
-        radioGroup:"0",
         baseURL: $http.defaults.staticURL,
         tableData: [],
         personInfo:{},
@@ -215,7 +220,11 @@ export default {
         },
         showMoreInfo(info) {
             this.personInfo=info;
+            console.log(info)
             this.dialog=true;
+        },
+        save(){
+            console.log(this.personInfo.type)
         },
         async getPageData() {
             this.loading=true;

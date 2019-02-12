@@ -47,7 +47,7 @@
       <v-flex md4>
         <v-card class="head-card">
           <v-card-title primary-title>
-            <div>今日新增</div>
+            <div>今日新增数</div>
           </v-card-title>
           <v-card-text>
             <div class="headline text-info">
@@ -68,14 +68,16 @@
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex md6>
+      <v-flex xs12
+              md6>
         <v-card class="v-card--material-chart">
           <v-card-text>
             <div ref="myChartPie" class="echarts sm"></div>
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex md6>
+      <v-flex xs12
+              md6>
         <v-card class="v-card--material-chart">
           <v-card-text>
             <div ref="myChartBar" class="echarts sm"></div>
