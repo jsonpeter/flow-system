@@ -1,6 +1,4 @@
 .DS_Store
-admin/node_modules/
-admin/.idea/
 front-end/.idea/
 front-end/node_modules/
 node-server/.idea/
