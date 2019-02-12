@@ -1,0 +1,48 @@
+{
+  "name": "webchat-server",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "debug": "node /usr/local/Cellar/node/10.4.1/lib/node_modules/nodemon/bin/nodemon.js bin/www"
+  },
+  "baiduApi": {
+    "appid": "15386676",
+    "key": "QgOP4mww9MiBKm8P5TsELzeE",
+    "secret": "0ITQOM42gFELdoftX7p9B50twtq2w6gs"
+  },
+  "mysql": {
+    "host": "localhost",
+    "user": "root",
+    "password": "123qwe!@#",
+    "database": "myDataBase",
+    "port": "3306"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "baidu-aip-sdk": "^2.3.9",
+    "bluebird": "^3.5.3",
+    "body-parser": "^1.17.2",
+    "cookie-parser": "~1.4.3",
+    "crypto": "0.0.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "jade": "~1.11.0",
+    "jsonwebtoken": "^8.4.0",
+    "moment": "^2.23.0",
+    "morgan": "~1.8.1",
+    "mount-middlewares": "^1.0.7",
+    "node-schedule": "^1.3.1",
+    "nodemon": "^1.18.7",
+    "serve-favicon": "~2.4.2",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "async": "^2.6.1",
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2017": "^6.24.1"
+  }
+}
