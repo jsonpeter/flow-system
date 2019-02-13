@@ -4,6 +4,7 @@ admin/.idea/
 front-end/.idea/
 front-end/node_modules/
 node-server/.idea/
+node-server/public/
 node-server/node_modules/
 dist/
 npm-debug.log*
