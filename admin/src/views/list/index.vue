@@ -7,6 +7,11 @@
       border
       fit
       highlight-current-row>
+      <el-table-column align="center" label="ID" width="60" >
+        <template slot-scope="scope">
+          {{ scope.row.id }}
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="登录名" width="110" >
         <template slot-scope="scope">
           {{ scope.row.username }}

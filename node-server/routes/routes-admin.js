@@ -35,7 +35,7 @@ router.post('/auth/update',function (req, res) {
     })
 });
 router.post('/auth/update_pwd',function (req, res) {
-    authCtr.update_pwd(req.body.id,function (data) {
+    authCtr.update_pwd({id:req.body.id,password:'123456'},function (data) {
         res.json(data)
     })
 });

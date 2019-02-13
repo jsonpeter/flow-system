@@ -21,12 +21,10 @@ const user = {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
         login(username, userInfo.password).then(response => {
-
           const data = response.data;
           console.log(data,data.success)
           if(data.success){
             let _token=data.data.token;
-            console.log(_token)
             setToken(_token)
             commit('SET_TOKEN',_token)
             resolve()

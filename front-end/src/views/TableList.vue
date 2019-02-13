@@ -38,7 +38,7 @@
               slot="items"
               slot-scope="{ item }" class="face-table">
               <td>{{ item.id }}</td>
-              <td><img :src="baseURL+'/images/1/'+item.faceId+'.jpg'"  v-on:error.once="moveErrorImg($event)"  class="img" v-cloak></td>
+              <td><img :src="baseURL+item.faceId+'.jpg'"  v-on:error.once="moveErrorImg($event)"  class="img" v-cloak></td>
               <td>{{ item.age }}</td>
               <td>{{ item.glasses==='none'?'否':'是' }}</td>
               <td :class="item.gender">{{ item.gender==='male'?'男':'女' }}</td>
@@ -68,7 +68,7 @@
               <v-flex xs3>
                 <v-badge left>
                   <span slot="badge">{{utilService.checkPersonDate(personInfo.firstTime,personInfo.lastTime)?'新顾客':'老顾客'}}</span>
-                  <img :src="baseURL+'/images/1/'+personInfo.faceId+'.jpg'"  v-on:error="moveErrorImg($event)"  class="img-more" v-cloak>
+                  <img :src="baseURL+personInfo.faceId+'.jpg'"  v-on:error="moveErrorImg($event)"  class="img-more" v-cloak>
                 </v-badge>
 
               </v-flex>
@@ -79,7 +79,7 @@
                         disabled
                 ></v-text-field>
                 <v-text-field
-                        :value="utilService.dateFormat(personInfo.lastTime)"
+                        :value="utilService.formatTime(personInfo.lastTime,'{y}-{m}-{d} {h}:{i}:{s}')"
                         label="上次到店时间"
                         disabled
                 ></v-text-field>
@@ -151,7 +151,7 @@ import * as _utilService from "../utils";
 export default {
     data: () => ({
         utilService:_utilService,
-        baseURL: $http.defaults.staticURL,
+        baseURL: $http.defaults.staticURL+'/images/'+sessionStorage.getItem('storeId')+'/',
         tableData: [],
         personInfo:{},
         pagination: { size:5,page:1,storeId:1},

@@ -40,7 +40,7 @@ module.exports = {
         });
     },
     fileDelSave:function(fileRsePath,newImgName,base64Img) {
-        console.log(fileRsePath, newImgName)
+        // console.log(fileRsePath, newImgName)
         mkdirs(fileRsePath,()=>{
             saveImg(fileRsePath+'/'+newImgName, base64Img)
         })
@@ -52,8 +52,6 @@ module.exports = {
     fs.writeFile(name, dataBuffer, function (err) {
         if (err) {
             console.error("图片保存失败" + err);
-        } else {
-            console.log("图片保存成功！");
         }
     });
 }
@@ -66,7 +64,7 @@ function mkdirs(dirname, callback) {
             // console.log(path.dirname(dirname));
             mkdirs(path.dirname(dirname), function () {
                 fs.mkdir(dirname, callback);
-                console.log('在目录创建好' + dirname  +'目录');
+                // console.log('在目录创建好' + dirname  +'目录');
             });
         }
     });

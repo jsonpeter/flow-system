@@ -12,20 +12,22 @@ module.exports= {
         let {username, password,type} = req_data;
         DBhelper.execute_sql(DBsql.user.admin_login(username, password,type), function (res) {
             let token = '',out_json={success:false,error:'no user'};
-            console.error(res.code,res.data)
+            console.error(res.code,res.data.length)
             if (res.code===0&&res.data.length>0) {
-                let data=res.data;
-                delete data[0].password;
-                console.log('~~~~~',data[0].id)
-                DBhelper.execute_sql(DBsql.user.admin_login_log(data[0].id))
-                // 创建token
-                token = jwt.sign({
-                    exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1小时过期
-                    data: data
-                }, 'secret');
-                out_json={success:true,data:{...data,token}};
+                let data=res.data[0];
+                delete data.password;
+
+                DBhelper.execute_sql(DBsql.user.admin_login_log(data.id),function (_res) {
+
+                    // 创建token
+                    token = jwt.sign({
+                        exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1小时过期
+                        data: data
+                    }, 'secret');
+                    out_json={success:true,data:{...data,token}};
+                    callback(out_json)
+                })
             }
-            callback(out_json)
         })
     },
     add:function (obj, callback) {

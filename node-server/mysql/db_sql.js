@@ -32,7 +32,7 @@ module.exports = {
         update_pwd:function(obj){
             const {id,password} = obj;
             let str='UPDATE admin_user set `password`=MD5("'+password+'") where id='+id;
-            console.log(str)
+            // console.log(str)
             return str
         },
         update:function(obj){
@@ -67,7 +67,7 @@ module.exports = {
                 '(SELECT *  FROM  users_log  where ' + w_sql + ' storeId=' + Number(_options.storeId) + ' and id in(select max(id) from users_log group by faceId)) as b,' +
                 '(SELECT * FROM users_info) as a ' +
                 'where a.faceId=b.faceId ' + limit;
-            console.log(_options)
+            // console.log(_options)
             return str;
         },
         select_time_gender(_options) {
@@ -78,8 +78,8 @@ module.exports = {
             //全部人员或今日进入 详情
             let str = 'SELECT count(t.gender="male" or null) as male,count(t.gender="female" or null) as female FROM  (SELECT a.* FROM ' +
                 ' (SELECT *  FROM  users_log  where ' + w_sql + ' storeId=' + Number(_options.storeId) + ') as b, ' +
-                ' (SELECT * FROM myDataBase.users_info) as a where a.faceId=b.faceId) as t';
-            console.log(str)
+                ' (SELECT * FROM users_info) as a where a.faceId=b.faceId) as t';
+            // console.log(str)
             return str;
         },
         select_time_age(_options) {
@@ -95,10 +95,10 @@ module.exports = {
                 ' when age between 30 and 40 then "30-40"' +
                 ' when age between 41 and 50 then "41-50"' +
                 ' when age >50 then "50"' +
-                ' end as age_temp from (select age from  myDataBase.users_info where faceid in ' +
-                '(SELECT faceId FROM myDataBase.users_log where ' + w_sql + ' storeId=' + Number(_options.storeId) + ' group by faceId)) as a ' +
-                ')t_user group by age_temp';
-            console.log(str)
+                ' end as age_temp from (select age from  users_info where faceid in ' +
+                '(SELECT faceId FROM users_log where ' + w_sql + ' storeId=' + Number(_options.storeId) + ' group by faceId)) as a ' +
+                ') t_user group by age_temp';
+            // console.log(str)
             return str;
         },
         select_new_all(storeId) {
@@ -108,26 +108,35 @@ module.exports = {
                 ' (select max(id) from users_log group by faceId)) as b, ' +
                 ' (SELECT * FROM users_info) as a ' +
                 ' where a.faceId=b.faceId and  date(a.dateTime)=date(b.dateTime) and date(a.dateTime)=date(now())) as NewPerson,' +
-                ' (SELECT count(*) as all_person FROM (SELECT * FROM myDataBase.users_log where date(dateTime)=date(now()) and storeId=' + storeId + ' group by faceId) as b,' +
-                ' (SELECT * FROM myDataBase.users_info ) as a where b.faceId=a.faceId) as AllPerson';
-            console.log(str)
+                ' (SELECT count(*) as all_person FROM (SELECT * FROM users_log where date(dateTime)=date(now()) and storeId=' + storeId + ' group by faceId) as b,' +
+                ' (SELECT * FROM users_info ) as a where b.faceId=a.faceId) as AllPerson';
+            // console.log(str)
             return str
         },
         select_store_histroy(storeId) {
-            return 'select * from store_histroy  where storeId=' + Number(storeId) + ' order by dateTime desc'
+            let str='select * from store_histroy  where storeId=' + Number(storeId) + ' order by dateTime desc'
+            // console.log(str)
+            return str;
         },
         addUser_info: function (obj) {
+
             const {faceId, beauty, age, gender, glasses, face_shape, storeId} = obj;
-            return 'INSERT into users_info (faceId,beauty,age,gender,glasses,shape,storeId)' +
-                ' VALUES ("' + faceId + '",' + beauty + ',' + age + ',"' + gender + '","' + glasses + '","' + face_shape + '",,' + storeId + ')';
+            let str= 'INSERT into users_info (faceId,beauty,age,gender,glasses,shape,storeId)' +
+                ' VALUES ("' + faceId + '",' + beauty + ',' + age + ',"' + gender + '","' + glasses + '","' + face_shape + '",' + storeId + ')';
+            // console.log(str)
+            return str;
 
         },
         select_minuteLog: function (faceId, storeId) {
-            return 'SELECT * FROM users_log where faceId="' + faceId + '" and storeId=' + storeId + ' and date(dateTime)=date(now()) and hour(dateTime)=hour(now()) and minute(dateTime)=minute(now()) order by id desc LIMIT 1';
+            let str='SELECT * FROM users_log where faceId="' + faceId + '" and storeId=' + storeId + ' and date(dateTime)=date(now()) and hour(dateTime)=hour(now()) and minute(dateTime)=minute(now()) order by id desc LIMIT 1';
+            // console.log(str)
+            return str;
         },
         addUser_log: function (faceId, storeId) {
             // const _now = moment().format('YYYY-MM-DD HH:mm:ss') /*现在的时间*/
-            return 'INSERT into users_log (faceId,storeId) VALUES ("' + faceId + '","' + storeId + '")';
+            let str= 'INSERT into users_log (faceId,storeId) VALUES ("' + faceId + '",' + storeId + ')';
+            // console.log(str)
+            return str;
         }
     }
 };

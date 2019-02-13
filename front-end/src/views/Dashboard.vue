@@ -24,14 +24,6 @@
     grid-list-xl
   >
     <v-layout wrap>
-      <material-notification
-              class="mb-3"
-              color="error"
-              v-show="errorShow"
-              dismissible
-      >
-        <strong>错误</strong> - This is a regular notification made with `color="error"`
-      </material-notification>
       <v-flex md4>
         <v-card class="head-card">
           <v-card-title primary-title color="green">
@@ -93,6 +85,26 @@
         </v-card>
       </v-flex>
     </v-layout>
+    <v-snackbar
+            color="error"
+            top
+            v-model="snackbar"
+            dark
+    >
+      <v-icon
+              color="white"
+              class="mr-3"
+      >
+        mdi-bell-plus
+      </v-icon>
+      <div>网络错误，请稍后再试！</div>
+      <v-icon
+              size="16"
+              @click="snackbar = false"
+      >
+        mdi-close-circle
+      </v-icon>
+    </v-snackbar>
   </v-container>
 </template>
 <script>
@@ -101,9 +113,9 @@ import $http from  '../plugins/axios'
 export default {
     data() {
         return {
-            errorShow:false,
+            snackbar:false,
             pagination: {size: 5, page: 1, storeId: 1},
-            baseURL: $http.defaults.staticURL,
+            baseURL: $http.defaults.staticURL+'/images/'+sessionStorage.getItem('storeId')+'/',
             loading: false,
             day30Data: [],
             numberObj: {num:{all_person: 0, new_person: 0},gender:{male:0,fmale:0}}
@@ -122,7 +134,7 @@ export default {
             console.log(data);
             let xData=[],seriesData=[];
             data.map(items=>{
-                xData.push(_utilService.dateFormat(items.dateTime,'/'))
+                xData.push(_utilService.dateFormat(items.dateTime,0))
                 seriesData.push(items.number)
             })
 
@@ -357,13 +369,13 @@ export default {
                 req_ary.map(items => {
                     $http.get(items.path, {
                         params: {
-                            storeId: 1,
                             startTime:_utilService.day30Before(),
-                            endTime: _utilService.dateFormat(new Date()),
+                            endTime: _utilService.dateFormat(new Date())
                         }
                     }).then(res => {
                         n++;
                         if (res.code !== 0) {
+                            this.snackbar=true;
                             return
                         }
                         items.callback(res.data);
@@ -371,7 +383,7 @@ export default {
                             r(res)
                         }
                     }).catch((e)=>{
-                        this.errorShow=true;
+                        this.snackbar=true;
                     });
                 })
             })

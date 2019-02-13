@@ -68,7 +68,7 @@
     export default {
         data: () => ({
             valid: true,
-            alertMessage:'用户名密码错误，账号未激活！',
+            alertMessage:'用户名密码错误，或账号未激活！',
             alertColor:'error',
             snackbar:false,
             show1: false,
@@ -89,7 +89,7 @@
                         if(res.success){
                             this.$store.state.token = res.data.token;
                             sessionStorage.setItem('access_token',res.data.token);
-                            console.log(this.$router.push)
+                            sessionStorage.setItem('storeId',res.data.id);
                             this.$router.push({ path: '/main' })
                         }else{
                             this.snackbar=true;

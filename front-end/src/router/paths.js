@@ -5,6 +5,7 @@
  */
 import Main from '@/views/Main'
 export default [
+    { path: '/', component: () => import('@/views/Login'), redirect: '/login', hidden: true },
     { path: '/login', component: () => import('@/views/Login'), hidden: true },
     {
         path: '/main',

@@ -2,11 +2,11 @@
   <el-menu class="navbar" mode="horizontal">
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
     <breadcrumb />
-    <el-dropdown class="avatar-container" trigger="click">
+    <div class="avatar-container">
       <div class="avatar-wrapper">
         <el-button @click="logout" type="text">退出</el-button>
       </div>
-    </el-dropdown>
+    </div>
   </el-menu>
 </template>
 

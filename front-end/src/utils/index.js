@@ -54,27 +54,6 @@ export function formatTime(time, option) {
   }
 }
 
-
-export function arrayBufferToBase64(buffer) {
-  let binary = ''
-  const bytes = new Uint8Array(buffer)
-  const len = bytes.byteLength
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[ i ])
-  }
-  return 'data:image/png;base64,' + window.btoa(binary)
-}
-
-export function readFileAsDataUrl(file) {
-  return new Promise((reslove, reject) => {
-    const reader = new FileReader()
-    reader.addEventListener('load', () => {
-      reslove(reader.result)
-    }, false)
-
-    reader.readAsDataURL(file)
-  })
-}
 export function dateFormat(time, type) {
     let date = new Date(time);
     let year = date.getFullYear();
@@ -87,7 +66,14 @@ export function dateFormat(time, type) {
     let minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
     let seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
     // 拼接
-    return type ?  month + "/" + day : year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+    let str=year + "-" + month + "-" + day + " 00:00:00"
+    if(type===0){
+        str=month + "/" + day
+    }
+    if(type===1){
+        str= year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds
+    }
+    return str
 }
 export function day30Before(){
     //获取三十天前日期
