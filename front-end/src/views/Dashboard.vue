@@ -127,7 +127,9 @@ export default {
         }
     },
    async mounted() {
-        await this.getPageDatas();
+      setInterval(()=>{
+           this.getPageDatas()
+      },5000)
     },
     methods: {
         setChartLineData(data) {

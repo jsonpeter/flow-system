@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const routes = require('./routes/routes');
-const fileTask = require('./task/index');
+require('./task/index');
 const routesAdmin = require('./routes/routes-admin');
 
 
@@ -19,5 +19,5 @@ app.use(bodyParser.json()); //for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/frontend', routes);
 app.use('/admin', routesAdmin);
-fileTask();
+
 module.exports = app;

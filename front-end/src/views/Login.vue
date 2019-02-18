@@ -12,7 +12,7 @@
       >
         <material-card
                 color="dark"
-                title="用户登录"
+                title="数据平台登录"
         >
         <v-text-field
 
@@ -107,7 +107,6 @@
 
   }
   .v-form.login{
-
     width: 80%;
     height: 380px;
     max-width: 400px;
@@ -118,5 +117,10 @@
     left:0;
     right:0;
     margin: auto;
+    .v-card{
+      .title{
+        text-align: center!important;
+      }
+    }
   }
 </style>

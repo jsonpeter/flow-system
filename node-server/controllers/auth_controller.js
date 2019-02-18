@@ -27,6 +27,8 @@ module.exports= {
                     out_json={success:true,data:{...data,token}};
                     callback(out_json)
                 })
+            }else{
+                callback(out_json)
             }
         })
     },
