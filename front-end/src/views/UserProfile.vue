@@ -3,6 +3,7 @@
     fill-height
     fluid
     grid-list-xl>
+    <core-loading :show="loading" />
     <v-layout
       justify-center
       wrap
@@ -67,12 +68,11 @@
                   text-xs-right
                 >
                   <v-btn
-                    block
                     class="mx-0 font-weight-light"
                     color="success"
                     @click="update"
                   >
-                    修改
+                    确认更新
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -109,6 +109,7 @@
     import * as _utilService from "../utils";
 export default {
     data: () => ({
+        loading:true,
         alertMessage:'信息修改成功！',
         alertColor:'success',
         snackbar:false,
@@ -125,8 +126,9 @@ export default {
     },
     methods:{
         update(){
-            console.log(this.infoData);
+            this.loading=true;
             $http.post('/auth/update_info',this.infoData).then(res=>{
+                this.loading=false;
                 if(res.code!==0){
                     this.alertMessage='修改失败，稍后再试！';
                     this.alertColor='error';
@@ -136,10 +138,10 @@ export default {
         },
         getInfo(){
             $http.get('/auth/userinfo').then(res=>{
+                this.loading=false;
                 if(res.code!==0){
                     return
                 }
-                console.log(res)
                 this.infoData=res.data[0];
             });
         }

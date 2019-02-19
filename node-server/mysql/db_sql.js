@@ -127,6 +127,13 @@ module.exports = {
             return str;
 
         },
+        update_user_type:function(obj){
+           let {id,storeId,type}=obj;
+           let str='update users_info set `type`="'+type+'" where id = ' +
+               '(Select id  from (Select id,faceId,type from users_info where id='+id+') as a, ' +
+               '( SELECT faceId FROM users_log where storeId='+storeId+') as b where a.faceId=b.faceId limit 0,1)';
+           return str;
+        },
         select_minuteLog: function (faceId, storeId) {
             let str='SELECT * FROM users_log where faceId="' + faceId + '" and storeId=' + storeId + ' and date(dateTime)=date(now()) and hour(dateTime)=hour(now()) and minute(dateTime)=minute(now()) order by id desc LIMIT 1';
             // console.log(str)

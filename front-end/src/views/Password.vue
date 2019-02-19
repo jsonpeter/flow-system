@@ -3,6 +3,7 @@
             fill-height
             fluid
             grid-list-xl>
+        <core-loading :show="loading" />
         <v-layout
                 justify-center
                 wrap
@@ -43,12 +44,11 @@
                                         text-xs-right
                                 >
                                     <v-btn
-                                            block
                                             :disabled="!valid"
                                             :color="color"
                                             @click="update"
                                     >
-                                        修改
+                                        确认修改
                                     </v-btn>
                                 </v-flex>
                             </v-layout>
@@ -85,6 +85,7 @@
     import * as _utilService from "../utils";
     export default {
         data: () => ({
+            loading:false,
             valid:false,
             alertMessage:'信息修改成功！',
             alertColor:'success',
@@ -114,6 +115,7 @@
                     this.snackbar = true;
                     return;
                 }
+                this.loading=true;
                 $http.post('/auth/update_pwd',{password:this.password2}).then(res=>{
                     if(res.code!==0){
                         this.alertMessage='修改失败，稍后再试！';
@@ -123,10 +125,8 @@
                         this.alertColor = 'success';
                     }
                     sessionStorage.removeItem('access_token');
+                    this.loading=false;
                     this.snackbar=true;
-                    setTimeout(()=>{
-                        this.$router.replace({ path: '/login' })
-                    },500)
                 });
             }
 

@@ -23,6 +23,7 @@
     fluid
     grid-list-xl
   >
+    <core-loading :show="loading" />
     <v-layout wrap>
       <v-flex md4>
         <v-card class="head-card">
@@ -113,10 +114,11 @@ import $http from  '../plugins/axios'
 export default {
     data() {
         return {
+            resTimer:null,
             snackbar:false,
             pagination: {size: 5, page: 1, storeId: 1},
             baseURL: $http.defaults.staticURL+'/images/'+sessionStorage.getItem('storeId')+'/',
-            loading: false,
+            loading: true,
             day30Data: [],
             numberObj: {num:{all_person: 0, new_person: 0},gender:{male:0,fmale:0}}
         }
@@ -126,14 +128,24 @@ export default {
             return this.$store.state.app.color
         }
     },
-   async mounted() {
-      setInterval(()=>{
-           this.getPageDatas()
-      },5000)
+    beforeDestroy(){
+        clearInterval(this.resTimer)
+    },
+    mounted() {
+        this.getPageDatas().then(()=>{
+            this.loading=false;
+            this.resTimer=setInterval(()=>{
+                this.loading=true;
+                this.getPageDatas().then(()=>{
+                    this.loading=false;
+                })
+            },5000)
+        })
+
     },
     methods: {
         setChartLineData(data) {
-            console.log(data);
+
             let xData=[],seriesData=[];
             data.map(items=>{
                 xData.push(_utilService.dateFormat(items.dateTime,0))
@@ -366,7 +378,7 @@ export default {
                     myChartBar.setOption(this.setBarData(res))
                 }
             }];
-            return new Promise(r => {
+            return new Promise((r,s)=> {
                 let n=1;
                 req_ary.map(items => {
                     $http.get(items.path, {
@@ -376,6 +388,7 @@ export default {
                         }
                     }).then(res => {
                         n++;
+                        console.log(n)
                         if (res.code !== 0) {
                             this.snackbar=true;
                             return
@@ -384,8 +397,9 @@ export default {
                         if(n===req_ary.length){
                             r(res)
                         }
-                    }).catch((e)=>{
+                    }).catch(()=>{
                         this.snackbar=true;
+                        s()
                     });
                 })
             })

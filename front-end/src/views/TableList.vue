@@ -4,6 +4,7 @@
     fluid
     grid-list-xl
   >
+    <core-loading :show="loading" />
     <v-layout
       justify-center
       wrap
@@ -45,7 +46,7 @@
               <td v-html="utilService.checkPersonDate(item.firstTime,item.lastTime)?' 否':'123'"></td>
               <td>{{utilService.dateFormat(item.lastTime)}}</td>
               <td>
-                <v-btn :color="color" @click="()=>{showMoreInfo(item)}" dark>详情查看</v-btn>
+                <v-btn :color="color" slot="activator" @click="()=>{showMoreInfo(item)}" dark>详情查看</v-btn>
               </td>
             </template>
           </v-data-table>
@@ -55,12 +56,12 @@
         </material-card>
       </v-flex>
     </v-layout>
-    <v-dialog v-model="dialog" persistent max-width="600px">
-      <v-card>
+    <v-dialog v-model="dialog"  max-width="600px">
+      <v-card v-if="dialog">
         <v-card-text>
           <v-container style="padding: 0 10px;" grid-list-md>
             <h3 class="v-title">到店详情
-              <v-btn icon dark @click="dialog = false">
+              <v-btn icon dark @click.stop="dialog = false">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </h3>
@@ -133,10 +134,35 @@
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn block :color="color"  @click="save">保存</v-btn>
+          <v-flex  xs12 text-xs-right  >
+            <v-btn :color="color"
+                   :loading="loading"
+                   :disabled="loading"
+                   @click="save">确 定</v-btn>
+          </v-flex>
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar
+            :color="alertColor"
+            top
+            v-model="snackbar"
+            dark
+    >
+      <v-icon
+              color="white"
+              class="mr-3"
+      >
+        mdi-bell-plus
+      </v-icon>
+      <div>{{alertMessage}}</div>
+      <v-icon
+              size="16"
+              @click="snackbar = false"
+      >
+        mdi-close-circle
+      </v-icon>
+    </v-snackbar>
   </v-container>
 </template>
 <style scoped>
@@ -150,6 +176,10 @@ import * as _utilService from "../utils";
 
 export default {
     data: () => ({
+        alertMessage:'信息修改成功！',
+        alertColor:'success',
+        snackbar:false,
+        loading:true,
         utilService:_utilService,
         baseURL: $http.defaults.staticURL+'/images/'+sessionStorage.getItem('storeId')+'/',
         tableData: [],
@@ -194,7 +224,6 @@ export default {
                 text: '操作'
             }
         ],
-        loading: false,
         dialog: false
     }),
     watch: {
@@ -210,7 +239,7 @@ export default {
             return this.$store.state.app.color
         }
     },
-    mounted() {
+    create() {
         this.getPageData()
     },
     methods: {
@@ -220,11 +249,23 @@ export default {
         },
         showMoreInfo(info) {
             this.personInfo=info;
-            console.log(info)
             this.dialog=true;
         },
         save(){
-            console.log(this.personInfo.type)
+            this.loading=true;
+            let {type,id}=this.personInfo;
+
+            $http.post('/auth/update_user_type',{
+                type:type,
+                id:id
+            }).then(res=>{
+                if(res.code!==0){
+                    return
+                }
+                this.dialog=false;
+                this.snackbar=true;
+                this.getPageData();
+            });
         },
         async getPageData() {
             this.loading=true;
@@ -239,6 +280,8 @@ export default {
                 }
                 this.tableData=res.data.list;
                 this.totals= Math.ceil(res.data.totals/this.pagination.size);
+                this.loading=false;
+            }).catch(()=>{
                 this.loading=false;
             });
         },

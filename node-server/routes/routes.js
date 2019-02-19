@@ -89,6 +89,12 @@ router.post('/auth/update_info',function (req, res) {
         res.json(data)
     })
 });
+router.post('/auth/update_user_type',function (req, res) {
+    let id=req.userInfo.data.id;
+    faceCtr.update_userType({storeId:id,...req.body}).then(data => {
+        res.json(data)
+    })
+});
 router.post('/auth/update_pwd',function (req, res) {
     let id=req.userInfo.data.id;
     faceCtr.update_Pwd({id:id,...req.body}).then(data => {

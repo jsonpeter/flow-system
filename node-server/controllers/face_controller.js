@@ -48,6 +48,13 @@ module.exports= {
             })
         })
     },
+    update_userType(options){
+        return new Promise((r)=>{
+            DBhelper.execute_sql(DBsql.face.update_user_type(options),(data)=>{
+                r(data)
+            })
+        })
+    },
     update_Pwd(options){
         return new Promise((r)=>{
             DBhelper.execute_sql(DBsql.admin.update_pwd(options),(data)=>{
