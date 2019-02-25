@@ -135,10 +135,7 @@ export default {
         this.getPageDatas().then(()=>{
             this.loading=false;
             this.resTimer=setInterval(()=>{
-                this.loading=true;
-                this.getPageDatas().then(()=>{
-                    this.loading=false;
-                })
+                this.getPageDatas()
             },5000)
         })
 

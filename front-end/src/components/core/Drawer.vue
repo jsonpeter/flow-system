@@ -60,15 +60,20 @@ export default {
     links: [
       {
         to: '/main/home',
-        icon: 'mdi-view-dashboard',
+        icon: 'mdi-poll',
         text: '统计报表'
       },
       {
         to: '/table-list',
-        icon: 'mdi-clipboard-outline',
+        icon: 'mdi-face',
         text: '到店人群'
       },
         {
+            to: '/camera',
+            icon: 'mdi-desktop-classic',
+            text: '实时监控'
+        },
+      {
             to: '/user-profile',
             icon: 'mdi-account',
             text: '商户信息'

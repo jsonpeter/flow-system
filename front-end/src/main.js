@@ -7,7 +7,6 @@ import './components'
 
 // Plugins
 import './plugins'
-
 // Sync router with store
 import { sync } from 'vuex-router-sync'
 

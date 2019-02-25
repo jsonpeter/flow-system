@@ -2,10 +2,10 @@
 import axios from 'axios'
 
 let instance = axios.create({
-    baseURL: 'http://106.13.93.109:3100/frontend',
-    staticURL: 'http://106.13.93.109:3100',
-    // baseURL: 'http://localhost:3100/frontend',
-    // staticURL: 'http://localhost:3100',
+    // baseURL: 'http://106.13.93.109:3100/frontend',
+    // staticURL: 'http://106.13.93.109:3100',
+    baseURL: 'http://localhost:3100/frontend',
+    staticURL: 'http://localhost:3100',
     timeout: 10000
     // adapter: Cache({
     //     time: 60 //分钟

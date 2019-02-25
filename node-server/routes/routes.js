@@ -29,6 +29,7 @@ router.get('/auth/select',(req, res) => {
     faceCtr.user_SelectPerson(options).then((data_count) => {
         options.select='all';
         options.limit=true;
+        console.log('data_count',data_count)
         faceCtr.user_SelectPerson(options).then((data) => {
             res.json({code:0,data:{totals:data_count.data[0].totals,list:data.data}})
         })

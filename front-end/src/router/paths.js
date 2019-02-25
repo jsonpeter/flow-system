@@ -24,6 +24,11 @@ export default [
                 component: () => import('@/views/TableList')
             },
             {
+                path: '/camera',
+                name: 'Camera',
+                component: () => import('@/views/Camera')
+            },
+            {
                 path: '/password',
                 name: 'Password',
                 component: () => import('@/views/Password')

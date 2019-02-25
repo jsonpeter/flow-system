@@ -21,10 +21,6 @@
           <v-data-table
             :headers="headers"
             :items="tableData"
-            :pagination.sync="pagination"
-            :total-items="totals"
-            :rows-per-page-items=[5,10,15,20]
-            rows-per-page-text="每页显示"
           >
             <template
               slot="headerCell"
@@ -37,21 +33,21 @@
             </template>
            <template
               slot="items"
-              slot-scope="{ item }" class="face-table">
-              <td>{{ item.id }}</td>
+              slot-scope="{ item,index }" class="face-table">
+              <td>{{ index+1 }}</td>
               <td><img :src="baseURL+item.faceId+'.jpg'"  v-on:error.once="moveErrorImg($event)"  class="img" v-cloak></td>
               <td>{{ item.age }}</td>
               <td>{{ item.glasses==='none'?'否':'是' }}</td>
               <td :class="item.gender">{{ item.gender==='male'?'男':'女' }}</td>
-              <td v-html="utilService.checkPersonDate(item.firstTime,item.lastTime)?' 否':'123'"></td>
-              <td>{{utilService.dateFormat(item.lastTime)}}</td>
+              <td v-html="utilService.checkPersonDate(item.firstTime,item.lastTime)?' 否':'<b class=text-red>是</b>'"></td>
+              <td>{{utilService.dateFormat(item.lastTime,1)}}</td>
               <td>
                 <v-btn :color="color" slot="activator" @click="()=>{showMoreInfo(item)}" dark>详情查看</v-btn>
               </td>
             </template>
           </v-data-table>
           <div class="text-xs-center pt-2">
-            <v-pagination v-model="pagination.page" :total-visible="10" :length="totals"></v-pagination>
+            <v-pagination v-model="page"  :total-visible="10" :length="totals"></v-pagination>
           </div>
         </material-card>
       </v-flex>
@@ -75,7 +71,7 @@
               </v-flex>
               <v-flex xs5>
                 <v-text-field
-                        :value="utilService.dateFormat(personInfo.firstTime)"
+                        :value="utilService.dateFormat(personInfo.firstTime,1)"
                         label="第一次到店时间"
                         disabled
                 ></v-text-field>
@@ -168,6 +164,9 @@
 <style scoped>
   .v-title{position: relative;}
   .v-title .v-btn{position: absolute; right: -20px;top:-20px;}
+  .v-datatable .v-datatable__actions{
+    display: none;
+  }
 </style>
 <script>
 import { mapMutations,  mapState  } from 'vuex'
@@ -179,16 +178,16 @@ export default {
         alertMessage:'信息修改成功！',
         alertColor:'success',
         snackbar:false,
+        page:1,
         loading:true,
         utilService:_utilService,
         baseURL: $http.defaults.staticURL+'/images/'+sessionStorage.getItem('storeId')+'/',
         tableData: [],
         personInfo:{},
-        pagination: { size:5,page:1,storeId:1},
+        pagination: { size:5,storeId:1},
         totals:0,
         headers: [
-            {
-                sortable: false,
+            {sortable: false,
                 text: 'ID',
                 value: 'id'
             },
@@ -197,41 +196,38 @@ export default {
                 text: '照片',
                 value: 'faceId'
             },
-            {
-                sortable: true,
+            {sortable: false,
                 text: '年龄',
                 value: 'age'
             },
-            {
-                sortable: false,
+            {sortable: false,
                 text: '戴眼睛',
                 value: 'glasses'
             },
-            {
-                sortable: true,
+            {sortable: false,
                 text: '性别',
                 value: 'gender'
             },
-            {
+            {sortable: false,
                 text: '老顾客',
                 value: 'dateTime'
             },
-            {
+            {sortable: false,
                 text: '到店时间',
                 value: 'lastTime'
             },
-            {
+            {sortable: false,
                 text: '操作'
             }
         ],
         dialog: false
     }),
     watch: {
-        pagination: {
-            handler () {
+        page: {
+            handler(newName, oldName) {
+                console.log('obj.a changed',this.page);
                 this.getPageData()
-            },
-            deep: true
+            }
         }
     },
     computed: {
@@ -239,7 +235,7 @@ export default {
             return this.$store.state.app.color
         }
     },
-    create() {
+    mounted() {
         this.getPageData()
     },
     methods: {
@@ -272,6 +268,7 @@ export default {
             $http.get('/auth/select',{
                 params: {
                     ...this.pagination,
+                    page:this.page,
                     type: 'all'
                 }
             }).then(res=>{

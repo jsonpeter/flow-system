@@ -66,8 +66,8 @@ module.exports = {
             let str = 'SELECT ' + s_sql + ' FROM ' +
                 '(SELECT *  FROM  users_log  where ' + w_sql + ' storeId=' + Number(_options.storeId) + ' and id in(select max(id) from users_log group by faceId)) as b,' +
                 '(SELECT * FROM users_info) as a ' +
-                'where a.faceId=b.faceId ' + limit;
-            // console.log(_options)
+                'where a.faceId=b.faceId order by b.id desc ' + limit;
+             // console.log('~~~',str)
             return str;
         },
         select_time_gender(_options) {

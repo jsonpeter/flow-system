@@ -17,7 +17,8 @@ const chokidar = require('chokidar');
 const helpers = require('../tools/helpers')
 const baiduAPI = require('../tools/baiduAPI')
 const faceCtr= require('../controllers/face_controller');
-const filePath = '/ftp/test/';
+// const filePath = '/ftp/test/';
+const filePath = path.resolve('public/face/');
 let save_path = path.resolve('public/person/');
 console.log('filePath',filePath)
 const watcher = chokidar.watch(filePath, {
@@ -29,29 +30,34 @@ const watcher = chokidar.watch(filePath, {
     },
     persistent: true
 });
-watcher.on('add', async (imgPath) => {
+watcher.on('add', async (imgPath,event) => {
+    console.log('size',parseInt(event.size/1024))
+    const fileSize=event.size/1024;
     let ext_name = path.extname(imgPath);
-    if (ext_name === '.jpg' || ext_name === '.png' || ext_name === '.jpeg') {
+    //文件大于15KB并小于100KB
+    if (fileSize>=15&&fileSize>=100&&(ext_name === '.jpg' || ext_name === '.png' || ext_name === '.jpeg')) {
         //逐个读取图片
         let base64Img = fs.readFileSync(imgPath, { encoding: 'base64' });
         const res = await baiduAPI.faceCheck(base64Img);
 
         if (res.error_msg === 'SUCCESS') {
             let dir_name = imgPath.replace(filePath, '');
-            let storeId = dir_name.substr(0, dir_name.indexOf('/'));
+            // let storeId = dir_name.substr(0, dir_name.indexOf('/'));
+            let storeId = 5;
             let save_path_id = save_path + '/' + storeId;
             // 调用创建用户组
             await baiduAPI.groupAdd(storeId)
             //人脸置信度&&人脸完整度
             const face_res = res.result.face_list[0];
             let faceId = face_res.face_token;
-            // console.log('人脸置信度',face_res.face_probability  +'*'+ face_res.quality.blur )
-            if (face_res.face_probability > 0.8 && face_res.quality.blur < 0.7) {
+             console.log('人脸置信度',face_res.face_probability  +'*'+ face_res.quality.blur )
+            if (face_res.face_probability > 0.9 && face_res.quality.blur < 0.5) {
 
                 const seach_res = await baiduAPI.faceSeach(base64Img, storeId);
+                console.log('搜索完成相似得分', seach_res.result.user_list[0].score)
+
                 //存在
-                if (seach_res.error_msg === 'SUCCESS' && seach_res.result.user_list[0].score > 95) {
-                    // console.log('搜索完成相似得分', seach_res.result.user_list[0].score)
+                if (seach_res.error_msg === 'SUCCESS' && seach_res.result.user_list[0].score > 92) {
                     console.log(colors.prompt('更新时间完成'));
                     //更新时间
                     faceId = seach_res.result.user_list[0].user_id;
@@ -82,11 +88,11 @@ watcher.on('add', async (imgPath) => {
             console.log(colors.error("无法识别"));
             console.log(res)
         }
-        // 删除图片
-        fs.unlink(imgPath, function () {
-            console.log('\x1b[91m 删除图片：' + imgPath + '\x1b[91m')
-        });
     }
+    // 删除图片
+    fs.unlink(imgPath, function () {
+        console.log('\x1b[91m 删除图片：' + imgPath + '\x1b[91m')
+    });
 })
 
 function addUserLog(save_path_id,faceId, storeId,base64Img) {
