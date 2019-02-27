@@ -35,7 +35,7 @@ watcher.on('add', async (imgPath,event) => {
     const fileSize=event.size/1024;
     let ext_name = path.extname(imgPath);
     //文件大于15KB并小于100KB
-    if (fileSize>=15&&fileSize>=100&&(ext_name === '.jpg' || ext_name === '.png' || ext_name === '.jpeg')) {
+    if (fileSize>=15&&fileSize<=180&&(ext_name === '.jpg' || ext_name === '.png' || ext_name === '.jpeg')) {
         //逐个读取图片
         let base64Img = fs.readFileSync(imgPath, { encoding: 'base64' });
         const res = await baiduAPI.faceCheck(base64Img);
@@ -57,7 +57,7 @@ watcher.on('add', async (imgPath,event) => {
                 console.log('搜索完成相似得分', seach_res.result.user_list[0].score)
 
                 //存在
-                if (seach_res.error_msg === 'SUCCESS' && seach_res.result.user_list[0].score > 92) {
+                if (seach_res.error_msg === 'SUCCESS' && seach_res.result.user_list[0].score > 72) {
                     console.log(colors.prompt('更新时间完成'));
                     //更新时间
                     faceId = seach_res.result.user_list[0].user_id;
@@ -88,6 +88,9 @@ watcher.on('add', async (imgPath,event) => {
             console.log(colors.error("无法识别"));
             console.log(res)
         }
+    }else{
+        console.log('未识别','文件大小：'+fileSize+',后缀：'+ext_name)
+
     }
     // 删除图片
     fs.unlink(imgPath, function () {

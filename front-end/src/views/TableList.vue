@@ -76,7 +76,7 @@
                         disabled
                 ></v-text-field>
                 <v-text-field
-                        :value="utilService.formatTime(personInfo.lastTime,'{y}-{m}-{d} {h}:{i}:{s}')"
+                        :value="utilService.dateFormat(personInfo.lastTime,1)"
                         label="上次到店时间"
                         disabled
                 ></v-text-field>
@@ -164,9 +164,6 @@
 <style scoped>
   .v-title{position: relative;}
   .v-title .v-btn{position: absolute; right: -20px;top:-20px;}
-  .v-datatable .v-datatable__actions{
-    display: none;
-  }
 </style>
 <script>
 import { mapMutations,  mapState  } from 'vuex'

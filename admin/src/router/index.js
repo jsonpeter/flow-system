@@ -38,7 +38,7 @@ export const constantRouterMap = [
     }]
   },
   {
-    path: '/add',
+    path: '/',
     component: Layout,
     children: [
       {
@@ -46,6 +46,23 @@ export const constantRouterMap = [
         name: 'Add',
         component: () => import('@/views/add/index'),
         meta: { title: '商户添加', icon: 'form' }
+      }
+    ]
+  },
+  {
+    path: '/store',
+    component: Layout,
+    children: [
+      {
+        path: 'add',
+        name: 'store_add',
+        component: () => import('@/views/stores/add'),
+        meta: { title: '门店添加', icon: 'link' }
+      }, {
+        path: 'index',
+        name: 'store_list',
+        component: () => import('@/views/stores/index'),
+        meta: { title: '门店管理', icon: 'example' }
       }
     ]
   },

@@ -71,6 +71,7 @@ router.get('/auth/select_histroy',(req, res) => {
         res.json(data)
     })
 })
+
 router.get('/auth/store_histroy',(req, res) => {
     let id=req.userInfo.data.id;
     faceCtr.store_Histroy(id).then((data) => {

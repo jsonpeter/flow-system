@@ -114,7 +114,7 @@ module.exports = {
             return str
         },
         select_store_histroy(storeId) {
-            let str='select * from store_histroy  where storeId=' + Number(storeId) + ' order by dateTime desc'
+            let str='select * from store_histroy  where storeId=' + Number(storeId)
             // console.log(str)
             return str;
         },
@@ -144,6 +144,11 @@ module.exports = {
             let str= 'INSERT into users_log (faceId,storeId) VALUES ("' + faceId + '",' + storeId + ')';
             // console.log(str)
             return str;
+        }
+    },
+    store:{
+        store_list:function (id) {
+            return 'SELECT  *  FROM store_list where userId=' + id + ' order by id desc';
         }
     }
 };

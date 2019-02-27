@@ -22,11 +22,6 @@
           {{ scope.row.company }}
         </template>
       </el-table-column>
-      <el-table-column label="联系人" width="110" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
-        </template>
-      </el-table-column>
       <el-table-column class-name="status-col" label="状态" width="90" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status===1?'启用':'停用' }}</el-tag>
@@ -44,8 +39,16 @@
       </el-table-column>
       <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="small" @click="()=>{showMoreInfo(scope.row)}">查看详情</el-button>
+
+          <el-button type="success" plain size="small" @click="()=>{showMoreInfo(scope.row)}">查看详情</el-button>
           <el-button type="warning" plain size="small" @click="()=>{changePwd(scope.row.id)}">重置密码</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="管理" width="200" align="center">
+        <template slot-scope="scope">
+          <el-button type="info" plain size="small" @click="()=>{showStore('list',scope.row.id)}">门店管理</el-button>
+          <el-button type="primary" plain size="small" @click="()=>{showStore('add',scope.row.id)}">添加门店</el-button>
+
         </template>
       </el-table-column>
     </el-table>
@@ -145,6 +148,10 @@ export default {
     this.fetchData()
   },
   methods: {
+    showStore(type,id){
+      let _name=type==='list'?'store_list':'store_add';
+      this.$router.push({name:_name,query: { id: id }})
+    },
     check_name(){
       $http.get('/check_name',{params:{username:this.form.username}}).then(res=>{
         console.log(res.data.data)

@@ -4,6 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const authCtr= require('../controllers/auth_controller');
+const storeCtr= require('../controllers/store_controller');
 const $check_token = require('../middlewares/check_token');
 
 router.post('/login',(req, res) => {
@@ -34,6 +35,11 @@ router.post('/auth/update',function (req, res) {
         res.json(data)
     })
 });
+router.get('/auth/store_list',(req, res) => {
+    storeCtr.store_SelectList(req.query.id).then((data) => {
+        res.json(data)
+    })
+})
 router.post('/auth/update_pwd',function (req, res) {
     authCtr.update_pwd({id:req.body.id,password:'123456'},function (data) {
         res.json(data)
