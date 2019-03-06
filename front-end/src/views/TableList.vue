@@ -9,6 +9,9 @@
       justify-center
       wrap
     >
+      <v-flex md12>
+        <core-store-list @setStoreData="setStoreData" @changeStore="setStoreId" ></core-store-list>
+      </v-flex>
       <v-flex
         md12
       >
@@ -23,7 +26,6 @@
             :items="tableData"
           >
             <template
-              slot="headerCell"
               slot-scope="{ header }"
             >
               <span
@@ -40,6 +42,7 @@
               <td>{{ item.glasses==='none'?'否':'是' }}</td>
               <td :class="item.gender">{{ item.gender==='male'?'男':'女' }}</td>
               <td v-html="utilService.checkPersonDate(item.firstTime,item.lastTime)?' 否':'<b class=text-red>是</b>'"></td>
+             <td>{{transforeDeviceID(item.deviceId)}}</td>
               <td>{{utilService.dateFormat(item.lastTime,1)}}</td>
               <td>
                 <v-btn :color="color" slot="activator" @click="()=>{showMoreInfo(item)}" dark>详情查看</v-btn>
@@ -169,7 +172,6 @@
 import { mapMutations,  mapState  } from 'vuex'
 import $http from  '../plugins/axios'
 import * as _utilService from "../utils";
-
 export default {
     data: () => ({
         alertMessage:'信息修改成功！',
@@ -178,10 +180,11 @@ export default {
         page:1,
         loading:true,
         utilService:_utilService,
-        baseURL: $http.defaults.staticURL+'/images/'+sessionStorage.getItem('storeId')+'/',
         tableData: [],
+        storeData:[],
+        deviceData:[],
         personInfo:{},
-        pagination: { size:5,storeId:1},
+        pagination: { size:5,storeId:0},
         totals:0,
         headers: [
             {sortable: false,
@@ -210,6 +213,10 @@ export default {
                 value: 'dateTime'
             },
             {sortable: false,
+                text: '抓拍设备',
+                value: 'deviceId'
+            },
+            {sortable: false,
                 text: '到店时间',
                 value: 'lastTime'
             },
@@ -222,23 +229,53 @@ export default {
     watch: {
         page: {
             handler(newName, oldName) {
-                console.log('obj.a changed',this.page);
+
                 this.getPageData()
             }
         }
     },
     computed: {
+        baseURL(){
+            return  $http.defaults.staticURL+'/images/'+this.pagination.storeId+'/';
+        },
         color() {
             return this.$store.state.app.color
         }
     },
-    mounted() {
-        this.getPageData()
-    },
     methods: {
+        setStoreId(id){
+
+            if(id) {
+                this.pagination.storeId = id;
+            }
+            this.getDeviceData();
+            this.getPageData();
+        },
+        setStoreData(data){
+            this.storeData=data
+        },
+        getDeviceData() {
+            $http.get('/auth/device_list', {
+                params: {
+                    storeId: this.pagination.storeId
+                }
+            }).then(res => {
+                this.deviceData=res.data;
+            })
+        },
         moveErrorImg(event){
             event.target.src = "../../img/noimg.png";
-            console.log(event.target.src)
+        },
+        transforeDeviceID(id){
+            let str='';
+
+            for(let i=0;i<this.deviceData.length;i++){
+                if(this.deviceData[i].id===id){
+                    str=this.deviceData[i].name;
+                    break
+                }
+            }
+            return str;
         },
         showMoreInfo(info) {
             this.personInfo=info;

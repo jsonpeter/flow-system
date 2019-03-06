@@ -12,34 +12,31 @@
           {{ scope.row.id }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="门店名称" width="110" >
+      <el-table-column align="center" label="设备名称" width="110" >
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column label="门店地址"  align="center">
+      <el-table-column label="设备类型"  align="center">
         <template slot-scope="scope">
-          {{ scope.row.address }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="有效期" width="300">
-        <template slot-scope="scope">
-          {{ dateFormat(scope.row.start_time) +'~'+dateFormat(scope.row.end_time) }}
+          {{ scope.row.type }}
         </template>
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="添加时间" width="200">
         <template slot-scope="scope">
-          {{ dateFormat(scope.row.createTime) }}
+          {{ dateFormat(scope.row.create_time) }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200" align="center">
+      <el-table-column label="操作" width="100" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="small" @click="()=>{deviceList(scope.row.id)}">设备管理</el-button>
           <el-button type="danger" plain size="small" @click="()=>{deleteData(scope.row.id)}">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-  <div style="margin-top: 20px;text-align: center">   <el-button @click="()=>{ $router.push({ path: '/list' })}">取消</el-button>
+  <div style="margin-top: 20px;text-align: center">
+    <el-button type="primary" plain size="small" @click="deviceAdd">设备添加</el-button>
+    <el-button @click="()=>{ $router.push({ path: '/list' })}">取消</el-button>
+
   </div>
   </div>
 </template>
@@ -61,25 +58,23 @@ export default {
     this.fetchData()
   },
   methods: {
-    deviceList(id){
-      this.$router.push({
-        path:'/device/list',query: { storeId: id,userId:this.$route.query.id }
-      })
-    },
     fetchData() {
       this.listLoading = true;
-      $http.get('/auth/store_list',{
+      $http.get('/auth/device_list',{
         params:{
-          id:this.$route.query.id
+          storeId:this.$route.query.storeId
         }
       }).then(response => {
         this.list = response.data.data;
         this.listLoading = false
       })
     },
+    deviceAdd(){
+      this.$router.push({path:'/device/add',query: this.$route.query})
+    },
     deleteData(id){
       this.listLoading = true;
-      $http.delete('/auth/store_del',{
+      $http.delete('/auth/device_del',{
         params:{
           id:id
         }

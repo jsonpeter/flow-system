@@ -3,11 +3,12 @@
     <el-table
       v-loading="listLoading"
       :data="list"
+      row-key="id"
       element-loading-text="Loading"
       border
       fit
       highlight-current-row>
-      <el-table-column align="center" label="ID" width="60" >
+      <el-table-column align="center"  label="ID" width="60" >
         <template slot-scope="scope">
           {{ scope.row.id }}
         </template>
@@ -75,17 +76,6 @@
           <el-form-item label="联系地址">
             <el-input v-model="form.address"></el-input>
           </el-form-item>
-          <el-form-item label="有效时间">
-            <el-date-picker
-              v-model="startEndTime"
-              type="daterange"
-              range-separator="~"
-              format="yyyy 年 MM 月 dd 日"
-              value-format="yyyy-MM-dd"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
-          </el-form-item>
           <el-form-item label="是否生效">
             <el-switch v-model="status"></el-switch>
           </el-form-item>
@@ -130,7 +120,6 @@ export default {
       dateFormat:dateFormat,
       list: null,
       listLoading: true,
-      startEndTime:[],
       status:false,
       form: {
         name: '',
@@ -191,8 +180,6 @@ export default {
       })
     },
     onSubmit() {
-      this.form.start_time=dateFormat(this.startEndTime[0]);
-      this.form.end_time=dateFormat(this.startEndTime[1]);
       this.form.status=~~this.status;
       console.log(this.form)
       $http.post('/auth/update',this.form).then(res=>{
@@ -215,8 +202,7 @@ export default {
       console.log(item);
       this.form=item;
       this.status=!!item.status;
-      this.startEndTime=[item.start_time||new Date(),item.end_time||new Date()]
-     this.showDialog=true;
+      this.showDialog=true;
     }
   }
 }

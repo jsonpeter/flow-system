@@ -8,7 +8,7 @@ module.exports = {
         admin_login: function (username, password, type) {
             let sql = '';
             if (type) {
-                sql = ' and date(now())>=date(start_time) and date(now())<=date(end_time) and status=1 '
+                sql = ' and status=1 '
             }
             return 'SELECT  *  FROM admin_user where username="' + username + '" and password=MD5("' + password + '") and type=' + type + sql;
 
@@ -19,15 +19,18 @@ module.exports = {
     },
     admin: {
         add: function (obj) {
-            const {username, company, name, tel, address, status, start_time, end_time, desc, auth_list} = obj;
-            return 'INSERT into admin_user (`username`,`password`,`company`, `name`,`tel`,`address`,`status`, `start_time`,`end_time`,`desc`,`auth_list`) ' +
-                'VALUES ("' + username + '",MD5("123456") ,"' + company + '","' + name + '","' + tel + '","' + address + '",' + status + ',"' + start_time + '","' + end_time + '","' + desc + '","' + auth_list + '")';
+            const {username, company, name, tel, address, status, desc, auth_list} = obj;
+            return 'INSERT into admin_user (`username`,`password`,`company`, `name`,`tel`,`address`,`status`,`desc`,`auth_list`) ' +
+                'VALUES ("' + username + '",MD5("123456") ,"' + company + '","' + name + '","' + tel + '","' + address + '",' + status + ',"' + desc + '","' + auth_list + '")';
         },
         list: function () {
             return 'SELECT  *  FROM admin_user where type=1 order by id desc';
         },
         select_info(id){
-            return 'SELECT `id`,`username`,`company`, `name`,`tel`,`address`,`start_time`,`end_time`,`lastTime` FROM admin_user where id='+id;
+            return 'SELECT `id`,`username`,`company`, `name`,`tel`,`address`,`lastTime` FROM admin_user where id='+id;
+        },
+        select_store(id){
+            return 'SELECT * FROM store_list where userId='+id+' order by id desc';
         },
         update_pwd:function(obj){
             const {id,password} = obj;
@@ -36,8 +39,8 @@ module.exports = {
             return str
         },
         update:function(obj){
-            const {id,username,company, name, tel, address, status, start_time, end_time, desc} = obj;
-            return 'UPDATE admin_user set `username`="'+username+'",`company`="'+company+'", `name`="'+name+'",`tel`="'+tel+'",`address`="'+address+'",`status`="'+status+'", `start_time`="'+start_time+'",`end_time`="'+end_time+'",`desc`="'+desc+'" where id='+id;
+            const {id,username,company, name, tel, address, status, desc} = obj;
+            return 'UPDATE admin_user set `username`="'+username+'",`company`="'+company+'", `name`="'+name+'",`tel`="'+tel+'",`address`="'+address+'",`status`="'+status+'",`desc`="'+desc+'" where id='+id;
         },
         update_info:function(obj){
             const {id, name, tel, address} = obj;
@@ -59,7 +62,7 @@ module.exports = {
                 s_sql = 'count(*) as totals';
             }
             if (_options.limit) {
-                s_sql = 'a.id,a.age,a.beauty,a.type,a.gender,a.glasses,a.shape,a.dateTime as firstTime,a.faceId,b.storeId,b.dateTime as lastTime'
+                s_sql = 'a.id,a.age,a.beauty,b.deviceId,a.type,a.gender,a.glasses,a.shape,a.dateTime as firstTime,a.faceId,b.storeId,b.dateTime as lastTime'
                 limit = 'limit ' + ((_options.page - 1) * _options.size) + ',' + _options.size;
             }
             //全部人员或今日进入 详情
@@ -67,7 +70,7 @@ module.exports = {
                 '(SELECT *  FROM  users_log  where ' + w_sql + ' storeId=' + Number(_options.storeId) + ' and id in(select max(id) from users_log group by faceId)) as b,' +
                 '(SELECT * FROM users_info) as a ' +
                 'where a.faceId=b.faceId order by b.id desc ' + limit;
-             // console.log('~~~',str)
+             console.log('~~~',str)
             return str;
         },
         select_time_gender(_options) {
@@ -120,9 +123,9 @@ module.exports = {
         },
         addUser_info: function (obj) {
 
-            const {faceId, beauty, age, gender, glasses, face_shape, storeId} = obj;
-            let str= 'INSERT into users_info (faceId,beauty,age,gender,glasses,shape,storeId)' +
-                ' VALUES ("' + faceId + '",' + beauty + ',' + age + ',"' + gender + '","' + glasses + '","' + face_shape + '",' + storeId + ')';
+            const {faceId, beauty, age, gender, glasses, face_shape} = obj;
+            let str= 'INSERT into users_info (faceId,beauty,age,gender,glasses,shape)' +
+                ' VALUES ("' + faceId + '",' + beauty + ',' + age + ',"' + gender + '","' + glasses + '","' + face_shape + '")';
             // console.log(str)
             return str;
 
@@ -139,16 +142,41 @@ module.exports = {
             // console.log(str)
             return str;
         },
-        addUser_log: function (faceId, storeId) {
+        addUser_log: function (faceId, storeId,deviceId) {
             // const _now = moment().format('YYYY-MM-DD HH:mm:ss') /*现在的时间*/
-            let str= 'INSERT into users_log (faceId,storeId) VALUES ("' + faceId + '",' + storeId + ')';
+            let str= 'INSERT into users_log (faceId,storeId,deviceId) VALUES ("' + faceId + '",' + storeId + ','+deviceId+')';
             // console.log(str)
             return str;
         }
     },
     store:{
         store_list:function (id) {
+
             return 'SELECT  *  FROM store_list where userId=' + id + ' order by id desc';
+        },
+        store_del:function (id) {
+            return 'DELETE FROM  store_list where id=' + id;
+        },
+        store_add:function (obj) {
+            const {userId, name, address,start_time,end_time} = obj;
+            return 'INSERT INTO store_list (userId,name,address,start_time,end_time) VALUES ('+userId+',"'+name+'","'+address+'","'+start_time+'","'+end_time+'")' ;
+        },
+        device_del:function (id) {
+            return 'DELETE FROM  device_list where id=' + id;
+        },
+        device_list:function (storeId,userId) {
+            let sql='';
+            if(userId){
+                sql=' and userId='+userId;
+            }
+            let str= 'SELECT  *  FROM device_list where storeId=' + storeId + ' ' +sql+' order by id desc';
+            console.log(str);
+            return str;
+        },
+        device_add:function (obj) {
+            const {userId, name, storeId,type} = obj;
+            return 'INSERT INTO device_list (userId,name,`type`,storeId) VALUES ('+userId+',"'+name+'","'+type+'",'+storeId+')' ;
+
         }
     }
 };

@@ -25,6 +25,9 @@
   >
     <core-loading :show="loading" />
     <v-layout wrap>
+      <v-flex md12>
+        <core-store-list @changeStore="setStoreId"></core-store-list>
+      </v-flex>
       <v-flex md4>
         <v-card class="head-card">
           <v-card-title primary-title color="green">
@@ -116,31 +119,30 @@ export default {
         return {
             resTimer:null,
             snackbar:false,
-            pagination: {size: 5, page: 1, storeId: 1},
-            baseURL: $http.defaults.staticURL+'/images/'+sessionStorage.getItem('storeId')+'/',
+            pagination: {size: 5, page: 1},
             loading: true,
             day30Data: [],
             numberObj: {num:{all_person: 0, new_person: 0},gender:{male:0,fmale:0}}
         }
     },
     computed: {
+        baseURL(){
+           return $http.defaults.staticURL+'/images/'+this.storeId+'/'
+        },
         color() {
             return this.$store.state.app.color
         }
     },
-    beforeDestroy(){
-        clearInterval(this.resTimer)
-    },
-    mounted() {
-        this.getPageDatas().then(()=>{
-            this.loading=false;
-            this.resTimer=setInterval(()=>{
-                this.getPageDatas()
-            },5000)
-        })
-
-    },
     methods: {
+        setStoreId(id){
+            if(id) {
+                this.storeId = id;
+            }
+            this.loading=true;
+            this.getPageDatas().then(()=>{
+                this.loading=false;
+            });
+        },
         setChartLineData(data) {
 
             let xData=[],seriesData=[];
@@ -363,7 +365,8 @@ export default {
                     const {female,male} =this.numberObj.gender;
                     myChartPie.setOption(this.setPieData(female,male))
                 }
-            }, {
+            },
+                {
                 path: '/auth/store_histroy', callback: (res) => {
                     let myChartLine = this.$echarts.init(this.$refs['myChartLine'])
                     // 绘制折线图表
@@ -374,18 +377,19 @@ export default {
                     let myChartBar = this.$echarts.init(this.$refs['myChartBar']);
                     myChartBar.setOption(this.setBarData(res))
                 }
-            }];
+            }
+            ];
             return new Promise((r,s)=> {
                 let n=1;
                 req_ary.map(items => {
                     $http.get(items.path, {
                         params: {
+                            storeId:this.storeId,
                             startTime:_utilService.day30Before(),
                             endTime: _utilService.dateFormat(new Date())
                         }
                     }).then(res => {
                         n++;
-                        console.log(n)
                         if (res.code !== 0) {
                             this.snackbar=true;
                             return
@@ -395,7 +399,7 @@ export default {
                             r(res)
                         }
                     }).catch(()=>{
-                        this.snackbar=true;
+                        this.snackbar=false;
                         s()
                     });
                 })

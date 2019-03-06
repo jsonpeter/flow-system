@@ -10,12 +10,9 @@
 </template>
 
 <script>
+
 export default {
-  metaInfo () {
-    return {
-      title: 'Vuetify Material Dashboard by CreativeTim'
-    }
-  }
+
 }
 </script>
 

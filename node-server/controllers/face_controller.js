@@ -69,6 +69,20 @@ module.exports= {
             })
         })
     },
+    select_Device(storeId,userId){
+        return new Promise((r)=>{
+            DBhelper.execute_sql(DBsql.store.device_list(storeId,userId),(data)=>{
+                r(data)
+            })
+        })
+    },
+    select_store(id){
+        return new Promise((r)=>{
+            DBhelper.execute_sql(DBsql.admin.select_store(id),(data)=>{
+                r(data)
+            })
+        })
+    },
     user_AddInfo:function (obj, callback) {
         DBhelper.execute_sql(DBsql.face.addUser_info(obj),(data)=>{
             if(callback){
@@ -76,8 +90,8 @@ module.exports= {
             }
         })
     },
-    user_AddLog:function (faceId,storeId,callback) {
-        DBhelper.execute_sql(DBsql.face.addUser_log(faceId,storeId),(data)=>{
+    user_AddLog:function (faceId,storeId,deviceId,callback) {
+        DBhelper.execute_sql(DBsql.face.addUser_log(faceId,storeId,deviceId),(data)=>{
             if(callback){
                 callback(data)
             }

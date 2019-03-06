@@ -21,17 +21,6 @@
     <el-form-item label="联系地址">
       <el-input v-model="form.address"></el-input>
     </el-form-item>
-  <el-form-item label="有效时间">
-    <el-date-picker
-      v-model="startEndTime"
-      type="daterange"
-      range-separator="~"
-      format="yyyy 年 MM 月 dd 日"
-      value-format="yyyy-MM-dd"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期">
-    </el-date-picker>
-  </el-form-item>
   <el-form-item label="是否生效">
     <el-switch v-model="form.status"></el-switch>
   </el-form-item>
@@ -48,7 +37,7 @@
   </el-form-item>
   <el-form-item >
     <el-button type="primary" @click="onSubmit">立即创建</el-button>
-    <el-button>取消</el-button>
+    <el-button @click="()=>{ $router.push({ path: '/list' })}">取消</el-button>
   </el-form-item>
 </el-form>
   </div>
@@ -60,7 +49,6 @@
   export default {
     data() {
       return {
-        startEndTime:[dateFormat(new Date()), getlastYear()],
         form: {
           name: '',
           username:'',
@@ -80,8 +68,6 @@
       onSubmit() {
         this.form.auth_list=this.form.auth_list.join(';');
         this.form.status=~~this.form.status;
-        this.form.start_time=this.startEndTime[0];
-        this.form.end_time=this.startEndTime[1];
         $http.post('/auth/add',this.form).then(res=>{
           if(res.data.code===0){
             Message({

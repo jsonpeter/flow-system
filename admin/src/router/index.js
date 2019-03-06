@@ -38,7 +38,7 @@ export const constantRouterMap = [
     }]
   },
   {
-    path: '/',
+    path: '/List',
     component: Layout,
     children: [
       {
@@ -52,6 +52,7 @@ export const constantRouterMap = [
   {
     path: '/store',
     component: Layout,
+    hidden: true,
     children: [
       {
         path: 'add',
@@ -63,6 +64,25 @@ export const constantRouterMap = [
         name: 'store_list',
         component: () => import('@/views/stores/index'),
         meta: { title: '门店管理', icon: 'example' }
+      }
+    ]
+  },
+  {
+    path: '/device',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'list',
+        name: 'device_list',
+        component: () => import('@/views/device/index'),
+        meta: { title: '设备管理', icon: 'example' }
+      },
+      {
+        path: 'add',
+        name: 'device_add',
+        component: () => import('@/views/device/add'),
+        meta: { title: '设备添加', icon: 'example' }
       }
     ]
   },

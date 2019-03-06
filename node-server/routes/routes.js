@@ -19,7 +19,7 @@ router.post('/login',(req, res) => {
 
 router.get('/auth/select',(req, res) => {
     let options= {
-        storeId:req.userInfo.data.id,
+        storeId:req.query.storeId,
         type:req.query.type,
         page:req.query.page,
         select:'count',
@@ -38,7 +38,8 @@ router.get('/auth/select',(req, res) => {
 })
 router.get('/auth/select_num',(req, res) => {
     let options= {
-        storeId:req.userInfo.data.id,
+        userId:req.userInfo.data.id,
+        storeId:req.query.storeId,
         startTime:req.query.startTime,
         endTime:req.query.endTime
     }
@@ -50,7 +51,7 @@ router.get('/auth/select_num',(req, res) => {
 })
 router.get('/auth/histroy_age',(req, res) => {
     let options= {
-        storeId:req.userInfo.data.id,
+        storeId:req.query.storeId,
         startTime:req.query.startTime,
         endTime:req.query.endTime
     }
@@ -61,7 +62,7 @@ router.get('/auth/histroy_age',(req, res) => {
 
 router.get('/auth/select_histroy',(req, res) => {
     let options= {
-        storeId:req.userInfo.data.id,
+        storeId:req.query.storeId,
         type:'all',
         limit:false,
         startTime:req.query.startTime,
@@ -73,14 +74,29 @@ router.get('/auth/select_histroy',(req, res) => {
 })
 
 router.get('/auth/store_histroy',(req, res) => {
-    let id=req.userInfo.data.id;
+    let id=req.query.storeId;
     faceCtr.store_Histroy(id).then((data) => {
         res.json(data)
     })
 })
+router.get('/auth/store_list',(req, res) => {
+    let id=req.userInfo.data.id;
+    faceCtr.select_store(id).then((data) => {
+        res.json(data)
+    })
+
+})
 router.get('/auth/userinfo',(req, res) => {
     let id=req.userInfo.data.id;
     faceCtr.select_Info(id).then((data) => {
+        res.json(data)
+    })
+
+})
+router.get('/auth/device_list',(req, res) => {
+    let storeId=req.query.storeId;
+    let userId=req.userInfo.data.id;
+    faceCtr.select_Device(storeId,userId).then((data) => {
         res.json(data)
     })
 

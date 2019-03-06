@@ -20,7 +20,7 @@ const faceCtr= require('../controllers/face_controller');
 // const filePath = '/ftp/test/';
 const filePath = path.resolve('public/face/');
 let save_path = path.resolve('public/person/');
-console.log('filePath',filePath)
+
 const watcher = chokidar.watch(filePath, {
     interval: 1000,
     binaryInterval: 500,
@@ -31,19 +31,25 @@ const watcher = chokidar.watch(filePath, {
     persistent: true
 });
 watcher.on('add', async (imgPath,event) => {
-    console.log('size',parseInt(event.size/1024))
+   let tmp = imgPath.substr(filePath.length+1);
+   let findIDary=tmp.substr(0,tmp.indexOf('/')).split('&');
+   if(findIDary.length!==2){
+       return;
+   }
+   let storeId = findIDary[0];
+   let deviceId = findIDary[1];
+   console.log('storeId:'+storeId,'deviceId:'+deviceId)
+    // console.log('size',parseInt(event.size/1024))
     const fileSize=event.size/1024;
     let ext_name = path.extname(imgPath);
     //文件大于15KB并小于100KB
-    if (fileSize>=15&&fileSize<=180&&(ext_name === '.jpg' || ext_name === '.png' || ext_name === '.jpeg')) {
+    if (fileSize>=5&&fileSize<=180&&(ext_name === '.jpg' || ext_name === '.png' || ext_name === '.jpeg')) {
         //逐个读取图片
         let base64Img = fs.readFileSync(imgPath, { encoding: 'base64' });
         const res = await baiduAPI.faceCheck(base64Img);
 
         if (res.error_msg === 'SUCCESS') {
             let dir_name = imgPath.replace(filePath, '');
-            // let storeId = dir_name.substr(0, dir_name.indexOf('/'));
-            let storeId = 5;
             let save_path_id = save_path + '/' + storeId;
             // 调用创建用户组
             await baiduAPI.groupAdd(storeId)
@@ -54,20 +60,21 @@ watcher.on('add', async (imgPath,event) => {
             if (face_res.face_probability > 0.9 && face_res.quality.blur < 0.5) {
 
                 const seach_res = await baiduAPI.faceSeach(base64Img, storeId);
-                console.log('搜索完成相似得分', seach_res.result.user_list[0].score)
+                console.log('搜索完成相似得分', seach_res)
 
                 //存在
                 if (seach_res.error_msg === 'SUCCESS' && seach_res.result.user_list[0].score > 72) {
                     console.log(colors.prompt('更新时间完成'));
                     //更新时间
                     faceId = seach_res.result.user_list[0].user_id;
-                    addUserLog(save_path_id, faceId, storeId, base64Img)
+                    addUserLog(save_path_id, faceId, storeId,deviceId, base64Img)
                 } else {
                     const data_obj = {
                         faceId: faceId,
                         beauty: face_res.beauty,
                         age: face_res.age,
                         storeId: storeId,
+                        deviceId: deviceId,
                         gender: face_res.gender.type,
                         glasses: face_res.glasses.type,
                         face_shape: face_res.face_shape.type
@@ -77,7 +84,7 @@ watcher.on('add', async (imgPath,event) => {
                     //入库
                     faceCtr.user_AddInfo(data_obj, () => {
                         // console.log('本地入库成功');
-                        addUserLog(save_path_id, faceId, storeId, base64Img);
+                        addUserLog(save_path_id, faceId, storeId,deviceId, base64Img);
 
                     });
                 }
@@ -90,7 +97,6 @@ watcher.on('add', async (imgPath,event) => {
         }
     }else{
         console.log('未识别','文件大小：'+fileSize+',后缀：'+ext_name)
-
     }
     // 删除图片
     fs.unlink(imgPath, function () {
@@ -98,15 +104,15 @@ watcher.on('add', async (imgPath,event) => {
     });
 })
 
-function addUserLog(save_path_id,faceId, storeId,base64Img) {
+function addUserLog(save_path_id,faceId, storeId,deviceId,base64Img) {
     faceCtr.user_checkLog(faceId, storeId, (res) => {
         if (res && res.data.length === 0) {
-            faceCtr.user_AddLog(faceId, storeId, () => {
+            faceCtr.user_AddLog(faceId, storeId,deviceId, () => {
                 //console.log('日志记录成功')
                 //保存文件夹
                 const newImgName = faceId + '.jpg';
                 helpers.fileDelSave(save_path_id, newImgName, base64Img);
-                console.log(colors.info('#####门店ID:'+storeId+',faceID:'+faceId));
+                console.log(colors.info('#####门店ID:'+storeId+',deviceId:'+deviceId));
             });
 
         }

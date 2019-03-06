@@ -18,9 +18,9 @@
           <v-form>
             <v-container py-0>
               <v-layout wrap>
-                <v-flex xs12>
+                <v-flex xs3>
                   <v-text-field
-                          label="店铺"
+                          label="名称"
                           :value="infoData.company"
                           disabled/>
                 </v-flex>
@@ -30,6 +30,12 @@
                           :value="infoData.username"
                           disabled/>
                 </v-flex>
+                <v-flex xs6>
+                  <v-text-field
+                          label="上次登录"
+                          :value="utilService.dateFormat(infoData.lastTime,1)"
+                          disabled/>
+                </v-flex>
                 <v-flex xs3>
                   <v-text-field
                           label="联系人"
@@ -37,31 +43,42 @@
                           :value="infoData.name"
                           />
                 </v-flex>
-                <v-flex xs4>
+                <v-flex xs3>
                   <v-text-field
                           label="电话"
                           v-model="infoData.tel"
                           :value="infoData.tel"
                           />
                 </v-flex>
-                <v-flex xs12>
+                <v-flex xs6>
                   <v-text-field
                           label="地址"
                           v-model="infoData.address"
                           :value="infoData.address"
                           />
                 </v-flex>
-                <v-flex xs6>
-                  <v-text-field
-                          label="有效期"
-                          :value="utilService.dateFormat(infoData.end_time)"
-                          disabled/>
-                </v-flex>
-                <v-flex xs6>
-                  <v-text-field
-                          label="上次登录"
-                          :value="utilService.dateFormat(infoData.lastTime)"
-                          disabled/>
+                <v-flex xs12>
+                  <v-data-table
+                          :headers="headers"
+                          :items="storeList"
+                  >
+                    <template
+                            slot-scope="{ header }"
+                    >
+              <span
+                      class="subheading font-weight-light text--darken-3"
+                      v-text="header.text"
+              />
+                    </template>
+                    <template
+                            slot="items"
+                            slot-scope="{ item,index }" class="face-table">
+                      <td>{{ index+1 }}</td>
+                      <td>{{ item.name }}</td>
+                      <td>{{ item.address }}</td>
+                      <td>{{utilService.parseTime(item.start_time,'{y}-{m}-{d}')+' 至 '+utilService.parseTime(item.end_time,'{y}-{m}-{d}')}}</td>
+                    </template>
+                  </v-data-table>
                 </v-flex>
                 <v-flex
                   xs12
@@ -110,6 +127,27 @@
 export default {
     data: () => ({
         loading:true,
+        storeList:[],
+        headers: [
+            {sortable: false,
+                text: 'ID',
+                value: 'id'
+            },
+            {
+                sortable: false,
+                text: '店铺名',
+                value: 'name'
+            },
+            {
+                sortable: false,
+                text: '地址',
+                value: 'address'
+            },
+            {
+                sortable: false,
+                text: '有效期'
+            }
+        ],
         alertMessage:'信息修改成功！',
         alertColor:'success',
         snackbar:false,
@@ -123,6 +161,7 @@ export default {
     },
     mounted(){
         this.getInfo()
+        this.getStoreData()
     },
     methods:{
         update(){
@@ -144,6 +183,11 @@ export default {
                 }
                 this.infoData=res.data[0];
             });
+        },
+        getStoreData(){
+            $http.get('/auth/store_list').then(res => {
+                this.storeList=res.data;
+            })
         }
     }
 }
