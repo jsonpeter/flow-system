@@ -90,8 +90,16 @@ module.exports= {
             }
         })
     },
-    user_AddLog:function (faceId,storeId,deviceId,callback) {
-        DBhelper.execute_sql(DBsql.face.addUser_log(faceId,storeId,deviceId),(data)=>{
+    user_AddLog:function (faceId,userId,storeId,deviceId,callback) {
+        DBhelper.execute_sql(DBsql.face.addUser_log(faceId,userId,storeId,deviceId),(data)=>{
+            if(callback){
+                callback(data)
+            }
+        })
+    },
+    user_CheckType:function (faceId,userId,storeId,callback) {
+        DBhelper.execute_sql(DBsql.face.select_type(faceId,userId,storeId),(data)=>{
+            console.log('----',data)
             if(callback){
                 callback(data)
             }

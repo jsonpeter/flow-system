@@ -40,9 +40,9 @@
             getStoreData(){
                 $http.get('/auth/store_list').then(res => {
                     console.log('store:',res)
-                    this.storeId=res.data[0].id;
+                    this.storeId=res.data[res.data.length-1].id;
                     this.storeList=res.data;
-                    this.changeStore(res.data[0]);
+                    this.changeStore(res.data[res.data.length-1]);
                     this.setStoreData(res.data)
                 })
             }

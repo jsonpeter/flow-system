@@ -16,7 +16,10 @@
 @import "material-dashboard/fixed-plugin";
 @import "material-dashboard/dropdown";
 .img-more{ width: 120px;}
-.text-red{color: gold;}
+.text-red,.color-vip{color: gold;}
+.color-white{color: greenyellow}
+.color-black{color: red}
+
 body .v-datatable__actions{
   display: none!important;
 }

@@ -38,6 +38,7 @@
               slot-scope="{ item,index }" class="face-table">
               <td>{{ index+1 }}</td>
               <td><img :src="baseURL+item.faceId+'.jpg'"  v-on:error.once="moveErrorImg($event)"  class="img" v-cloak></td>
+              <td :class="'color-'+item.type">{{ transType(item.type) }}</td>
               <td>{{ item.age }}</td>
               <td>{{ item.glasses==='none'?'否':'是' }}</td>
               <td :class="item.gender">{{ item.gender==='male'?'男':'女' }}</td>
@@ -118,6 +119,11 @@
                   ></v-radio>
                   <v-radio
 
+                          label="白名单"
+                          value="white"
+                  ></v-radio>
+                  <v-radio
+
                           label="VIP"
                           value="vip"
                   ></v-radio>
@@ -174,20 +180,21 @@ import $http from  '../plugins/axios'
 import * as _utilService from "../utils";
 export default {
     data: () => ({
-        alertMessage:'信息修改成功！',
-        alertColor:'success',
-        snackbar:false,
-        page:1,
-        loading:true,
-        utilService:_utilService,
+        alertMessage: '信息修改成功！',
+        alertColor: 'success',
+        snackbar: false,
+        page: 1,
+        loading: true,
+        utilService: _utilService,
         tableData: [],
-        storeData:[],
-        deviceData:[],
-        personInfo:{},
-        pagination: { size:5,storeId:0},
-        totals:0,
+        storeData: [],
+        deviceData: [],
+        personInfo: {},
+        pagination: {size: 5, storeId: 0},
+        totals: 0,
         headers: [
-            {sortable: false,
+            {
+                sortable: false,
                 text: 'ID',
                 value: 'id'
             },
@@ -196,31 +203,43 @@ export default {
                 text: '照片',
                 value: 'faceId'
             },
-            {sortable: false,
+            {
+                sortable: false,
+                text: '类别',
+                value: 'type'
+            },
+            {
+                sortable: false,
                 text: '年龄',
                 value: 'age'
             },
-            {sortable: false,
+            {
+                sortable: false,
                 text: '戴眼睛',
                 value: 'glasses'
             },
-            {sortable: false,
+            {
+                sortable: false,
                 text: '性别',
                 value: 'gender'
             },
-            {sortable: false,
+            {
+                sortable: false,
                 text: '老顾客',
                 value: 'dateTime'
             },
-            {sortable: false,
+            {
+                sortable: false,
                 text: '抓拍设备',
                 value: 'deviceId'
             },
-            {sortable: false,
+            {
+                sortable: false,
                 text: '到店时间',
                 value: 'lastTime'
             },
-            {sortable: false,
+            {
+                sortable: false,
                 text: '操作'
             }
         ],
@@ -235,24 +254,24 @@ export default {
         }
     },
     computed: {
-        baseURL(){
-            return  $http.defaults.staticURL+'/images/'+this.pagination.storeId+'/';
+        baseURL() {
+            return $http.defaults.staticURL + '/images/' + this.pagination.storeId + '/';
         },
         color() {
             return this.$store.state.app.color
         }
     },
     methods: {
-        setStoreId(id){
+        setStoreId(id) {
 
-            if(id) {
+            if (id) {
                 this.pagination.storeId = id;
             }
             this.getDeviceData();
             this.getPageData();
         },
-        setStoreData(data){
-            this.storeData=data
+        setStoreData(data) {
+            this.storeData = data
         },
         getDeviceData() {
             $http.get('/auth/device_list', {
@@ -260,62 +279,84 @@ export default {
                     storeId: this.pagination.storeId
                 }
             }).then(res => {
-                this.deviceData=res.data;
+                this.deviceData = res.data;
             })
         },
-        moveErrorImg(event){
+        moveErrorImg(event) {
             event.target.src = "../../img/noimg.png";
         },
-        transforeDeviceID(id){
-            let str='';
+        transforeDeviceID(id) {
+            let str = '';
 
-            for(let i=0;i<this.deviceData.length;i++){
-                if(this.deviceData[i].id===id){
-                    str=this.deviceData[i].name;
+            for (let i = 0; i < this.deviceData.length; i++) {
+                if (this.deviceData[i].id === id) {
+                    str = this.deviceData[i].name;
                     break
                 }
             }
             return str;
         },
         showMoreInfo(info) {
-            this.personInfo=info;
-            this.dialog=true;
+            this.personInfo = info;
+            this.dialog = true;
         },
-        save(){
-            this.loading=true;
-            let {type,id}=this.personInfo;
+        save() {
+            this.loading = true;
+            let {type, id} = this.personInfo;
 
-            $http.post('/auth/update_user_type',{
-                type:type,
-                id:id
-            }).then(res=>{
-                if(res.code!==0){
+            $http.post('/auth/update_user_type', {
+                type: type,
+                storeId:this.pagination.storeId,
+                id: id
+            }).then(res => {
+                if (res.code !== 0) {
                     return
                 }
-                this.dialog=false;
-                this.snackbar=true;
+                this.dialog = false;
+                this.snackbar = true;
                 this.getPageData();
             });
         },
         async getPageData() {
-            this.loading=true;
-            $http.get('/auth/select',{
+            this.loading = true;
+            $http.get('/auth/select', {
                 params: {
                     ...this.pagination,
-                    page:this.page,
+                    page: this.page,
                     type: 'all'
                 }
-            }).then(res=>{
-                if(res.code!==0){
+            }).then(res => {
+                if (res.code !== 0) {
                     return
                 }
-                this.tableData=res.data.list;
-                this.totals= Math.ceil(res.data.totals/this.pagination.size);
-                this.loading=false;
-            }).catch(()=>{
-                this.loading=false;
+                this.tableData = res.data.list;
+                this.totals = Math.ceil(res.data.totals / this.pagination.size);
+                this.loading = false;
+            }).catch(() => {
+                this.loading = false;
             });
         },
+        transType(str) {
+            let s = '';
+            switch (str) {
+                case 'black':
+                    s = '黑名单';
+                    break;
+                case 'white':
+                    s = '白名单';
+                    break;
+                case 'vip':
+                    s = 'vip';
+                    break;
+                case 'normal':
+                    s = '普通';
+                    break;
+                default:
+                    s = '未知';
+                    break;
+            }
+            return s;
+        }
     }
 }
 </script>

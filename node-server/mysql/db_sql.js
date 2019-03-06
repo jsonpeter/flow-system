@@ -11,7 +11,6 @@ module.exports = {
                 sql = ' and status=1 '
             }
             return 'SELECT  *  FROM admin_user where username="' + username + '" and password=MD5("' + password + '") and type=' + type + sql;
-
         },
         admin_login_log:function (id) {
             return 'UPDATE admin_user set `lastTime`=now() where id='+id;
@@ -24,7 +23,7 @@ module.exports = {
                 'VALUES ("' + username + '",MD5("123456") ,"' + company + '","' + name + '","' + tel + '","' + address + '",' + status + ',"' + desc + '","' + auth_list + '")';
         },
         list: function () {
-            return 'SELECT  *  FROM admin_user where type=1 order by id desc';
+            return 'SELECT  *  FROM admin_user where `type`=1 order by id desc';
         },
         select_info(id){
             return 'SELECT `id`,`username`,`company`, `name`,`tel`,`address`,`lastTime` FROM admin_user where id='+id;
@@ -70,7 +69,7 @@ module.exports = {
                 '(SELECT *  FROM  users_log  where ' + w_sql + ' storeId=' + Number(_options.storeId) + ' and id in(select max(id) from users_log group by faceId)) as b,' +
                 '(SELECT * FROM users_info) as a ' +
                 'where a.faceId=b.faceId order by b.id desc ' + limit;
-             console.log('~~~',str)
+            // console.log('~~~',str)
             return str;
         },
         select_time_gender(_options) {
@@ -101,7 +100,7 @@ module.exports = {
                 ' end as age_temp from (select age from  users_info where faceid in ' +
                 '(SELECT faceId FROM users_log where ' + w_sql + ' storeId=' + Number(_options.storeId) + ' group by faceId)) as a ' +
                 ') t_user group by age_temp';
-            // console.log(str)
+            // console.log('select_time_age',str)
             return str;
         },
         select_new_all(storeId) {
@@ -109,11 +108,11 @@ module.exports = {
             let str='SELECT * from (SELECT count(*) as new_person FROM ' +
                 ' (SELECT *  FROM  users_log  where  storeId=' + Number(storeId) + ' and id in ' +
                 ' (select max(id) from users_log group by faceId)) as b, ' +
-                ' (SELECT * FROM users_info) as a ' +
-                ' where a.faceId=b.faceId and  date(a.dateTime)=date(b.dateTime) and date(a.dateTime)=date(now())) as NewPerson,' +
+                ' (SELECT faceId,`dateTime`,`type` FROM users_info) as a ' +
+                ' where a.faceId=b.faceId and a.type!="white" and  date(a.dateTime)=date(b.dateTime) and date(a.dateTime)=date(now())) as NewPerson,' +
                 ' (SELECT count(*) as all_person FROM (SELECT * FROM users_log where date(dateTime)=date(now()) and storeId=' + storeId + ' group by faceId) as b,' +
-                ' (SELECT * FROM users_info ) as a where b.faceId=a.faceId) as AllPerson';
-            // console.log(str)
+                ' (SELECT faceId,`type` FROM users_info ) as a where b.faceId=a.faceId and a.type!="white" ) as AllPerson';
+            // console.log('今日新增人员',str)
             return str
         },
         select_store_histroy(storeId) {
@@ -122,36 +121,35 @@ module.exports = {
             return str;
         },
         addUser_info: function (obj) {
-
-            const {faceId, beauty, age, gender, glasses, face_shape} = obj;
-            let str= 'INSERT into users_info (faceId,beauty,age,gender,glasses,shape)' +
-                ' VALUES ("' + faceId + '",' + beauty + ',' + age + ',"' + gender + '","' + glasses + '","' + face_shape + '")';
+            const {userId,faceId, beauty, age, gender, glasses, face_shape,storeId} = obj;
+            let str= 'INSERT into users_info (userId,faceId,beauty,age,gender,glasses,shape,storeId)' +
+                ' VALUES ('+userId+',"' + faceId + '",' + beauty + ',' + age + ',"' + gender + '","' + glasses + '","' + face_shape + '",'+storeId+')';
             // console.log(str)
             return str;
 
         },
         update_user_type:function(obj){
-           let {id,storeId,type}=obj;
-           let str='update users_info set `type`="'+type+'" where id = ' +
-               '(Select id  from (Select id,faceId,type from users_info where id='+id+') as a, ' +
-               '( SELECT faceId FROM users_log where storeId='+storeId+') as b where a.faceId=b.faceId limit 0,1)';
+           let {id,storeId,userId,type}=obj;
+           let str='update users_info set `type`="'+type+'" where id = ' +id +' and storeId='+storeId+' and userId='+userId;
            return str;
         },
-        select_minuteLog: function (faceId, storeId) {
-            let str='SELECT * FROM users_log where faceId="' + faceId + '" and storeId=' + storeId + ' and date(dateTime)=date(now()) and hour(dateTime)=hour(now()) and minute(dateTime)=minute(now()) order by id desc LIMIT 1';
+        select_minuteLog: function (faceId) {
+            let str='SELECT * FROM users_log where faceId="' + faceId + '" and date(dateTime)=date(now()) and hour(dateTime)=hour(now()) and minute(dateTime)=minute(now()) order by id desc LIMIT 1';
             // console.log(str)
             return str;
         },
-        addUser_log: function (faceId, storeId,deviceId) {
+        addUser_log: function (faceId,userId,storeId,deviceId) {
             // const _now = moment().format('YYYY-MM-DD HH:mm:ss') /*现在的时间*/
-            let str= 'INSERT into users_log (faceId,storeId,deviceId) VALUES ("' + faceId + '",' + storeId + ','+deviceId+')';
+            let str= 'INSERT into users_log (faceId,userId,storeId,deviceId) VALUES ("' + faceId + '",'+userId+',' + storeId + ','+deviceId+')';
             // console.log(str)
             return str;
-        }
+        },
+        select_type(faceId,userId,storeId){
+            return 'SELECT `type` FROM users_info where userId='+userId+' and storeId='+storeId+' and faceId="'+faceId+'"';
+        },
     },
     store:{
         store_list:function (id) {
-
             return 'SELECT  *  FROM store_list where userId=' + id + ' order by id desc';
         },
         store_del:function (id) {
@@ -170,7 +168,7 @@ module.exports = {
                 sql=' and userId='+userId;
             }
             let str= 'SELECT  *  FROM device_list where storeId=' + storeId + ' ' +sql+' order by id desc';
-            console.log(str);
+            //console.log(str);
             return str;
         },
         device_add:function (obj) {
