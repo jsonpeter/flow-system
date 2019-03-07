@@ -174,7 +174,9 @@ module.exports = {
         device_add:function (obj) {
             const {userId, name, storeId,type} = obj;
             return 'INSERT INTO device_list (userId,name,`type`,storeId) VALUES ('+userId+',"'+name+'","'+type+'",'+storeId+')' ;
-
+        },
+        add_history:function () {
+            return 'INSERT INTO  `myDataBase`.`store_histroy` (`number`,`userId`,`storeId`)  SELECT count(*) as number,c.storeId,c.userId FROM (SELECT * FROM  myDataBase.users_log where   DATE_FORMAT(dateTime,"%m-%d-%Y")=DATE_FORMAT(now(),"%m-%d-%Y")  order by id desc) as c group by c.userId'
         }
     }
 };

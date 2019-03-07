@@ -7,6 +7,7 @@ colors.setTheme({
     verbose: 'cyan',
     prompt: 'grey',
     info: 'green',
+    data: 'grey',
     help: 'cyan',
     warn: 'yellow',
     debug: 'blue',
@@ -21,18 +22,24 @@ const filePath = path.resolve('public/face/');
 let save_path = path.resolve('public/person/');
 
 const watcher = chokidar.watch(filePath, {
-    interval: 500,
-    awaitWriteFinish:true,
+    interval: 1000,
+    binaryInterval: 500,
+    awaitWriteFinish: {
+        stabilityThreshold: 2000,
+        pollInterval: 1000
+    },
     persistent: true
 });
 watcher.on('add', async (imgPath,event) => {
    let tmp = imgPath.substr(filePath.length+1);
    let findIDary=tmp.substr(0,tmp.indexOf('/')).split('&');
    if(findIDary.length!==3){
-
        return;
    }
-   let userId = findIDary[0], storeId = findIDary[1], deviceId = findIDary[2];
+   console.log('findIDary',findIDary)
+   let userId = findIDary[0];
+   let storeId = findIDary[1];
+   let deviceId = findIDary[2];
    console.log('userId:'+userId+',storeId:'+storeId+',deviceId:'+deviceId)
     // console.log('size',parseInt(event.size/1024))
     const fileSize=event.size/1024;
@@ -51,9 +58,10 @@ watcher.on('add', async (imgPath,event) => {
             //人脸置信度&&人脸完整度
             const face_res = res.result.face_list[0];
             let faceId = face_res.face_token;
-            console.log(colors.debug('人脸置信度'+face_res.face_probability  +'*'+ face_res.quality.blur ))
+             console.log('人脸置信度',face_res.face_probability  +'*'+ face_res.quality.blur )
             if (face_res.face_probability > 0.9 && face_res.quality.blur < 0.5) {
                 const seach_res = await baiduAPI.faceSeach(base64Img, storeId);
+                console.log('搜索完成相似得分')
                 //存在
                 if (seach_res.error_msg === 'SUCCESS' && seach_res.result.user_list[0].score > 72) {
                     console.log(colors.prompt('更新时间完成'));
@@ -61,8 +69,9 @@ watcher.on('add', async (imgPath,event) => {
                     faceId = seach_res.result.user_list[0].user_id;
                     addUserLog(save_path_id, faceId,userId, storeId,deviceId, base64Img);
                     //检测状态
+                    console.log('检测状态')
                     faceCtr.user_CheckType(faceId,userId,storeId, (res) => {
-                        console.log(colors.info('类别',res.data[0].type));
+                        console.error('类别',res.data[0].type);
                     })
                 } else {
                     const data_obj = {
@@ -85,29 +94,31 @@ watcher.on('add', async (imgPath,event) => {
                     });
                 }
             } else {
-                console.log(colors.debug("置信度低"));
+                console.log(colors.error("置信度低"));
             }
         } else {
             console.log(colors.error("无法识别"));
             console.log(res)
         }
     }else{
-        console.log(colors.input('未识别文件大小：'+fileSize+',后缀：'+ext_name))
+        console.log('未识别','文件大小：'+fileSize+',后缀：'+ext_name)
     }
     // 删除图片
     fs.unlink(imgPath, function () {
-        console.log(colors.help('删除图片：' + imgPath))
+        console.log('\x1b[91m 删除图片：' + imgPath + '\x1b[91m')
     });
 })
+
 function addUserLog(save_path_id,faceId,userId, storeId,deviceId,base64Img) {
     // 防止并发添加
     faceCtr.user_checkLog(faceId, storeId, (res) => {
         if (res && res.data.length === 0) {
             faceCtr.user_AddLog(faceId,userId, storeId,deviceId, () => {
+                //console.log('日志记录成功')
                 //保存文件夹
                 const newImgName = faceId + '.jpg';
                 helpers.fileDelSave(save_path_id, newImgName, base64Img);
-                console.log('日志记录成功')
+                console.log(colors.info('#####门店ID:'+storeId+',deviceId:'+deviceId));
             });
 
         }

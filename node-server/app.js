@@ -2,10 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const routes = require('./routes/routes');
-require('./task/index');
 const routesAdmin = require('./routes/routes-admin');
-
-
+//定时任务
+require('./task/index');
+require('./task/every-day-history');
 //设置允许跨域访问该服务.
 app.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

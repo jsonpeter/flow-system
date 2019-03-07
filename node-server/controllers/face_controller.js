@@ -99,7 +99,6 @@ module.exports= {
     },
     user_CheckType:function (faceId,userId,storeId,callback) {
         DBhelper.execute_sql(DBsql.face.select_type(faceId,userId,storeId),(data)=>{
-            console.log('----',data)
             if(callback){
                 callback(data)
             }

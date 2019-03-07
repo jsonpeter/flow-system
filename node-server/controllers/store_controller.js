@@ -48,5 +48,12 @@ module.exports= {
                 r(data)
             })
         })
+    },
+    addHistory:function () {
+        return new Promise((r)=>{
+            DBhelper.execute_sql(DBsql.store.add_history(),(data)=>{
+                r(data)
+            })
+        })
     }
 }
