@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const routes = require('./routes/routes');
 const routesAdmin = require('./routes/routes-admin');
+
 //定时任务
 require('./task/index');
 require('./task/every-day-history');
@@ -19,5 +20,6 @@ app.use(bodyParser.json()); //for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/frontend', routes);
 app.use('/admin', routesAdmin);
+
 
 module.exports = app;

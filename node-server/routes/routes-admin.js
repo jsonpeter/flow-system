@@ -62,6 +62,11 @@ router.post('/auth/device_add',function (req, res) {
         res.json(data)
     })
 });
+router.post('/auth/device_edit',function (req, res) {
+    storeCtr.Device_Edit(req.body).then((data)=>{
+        res.json(data)
+    })
+});
 router.delete('/auth/device_del',function (req, res) {
     storeCtr.device_Del(req.query.id).then((data)=>{
         res.json(data)

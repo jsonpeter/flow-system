@@ -27,7 +27,8 @@ module.exports = {
                     if(err){
                         console.error(err)
                     }
-                    _data.data=rows;
+                    let o=JSON.stringify(rows);
+                    _data.data=JSON.parse(o);
                     //事件驱动回调
                     callback(_data);
                     //释放连接

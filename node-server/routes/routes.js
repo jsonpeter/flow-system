@@ -4,9 +4,18 @@
 const express = require('express');
 const router = express.Router();
 
+
+const moment = require('moment');
+const randomstring = require('randomstring');
+const crypto = require('crypto-js');
+const helpers= require('../tools/helpers');
+
+const ffmpeg = require('fluent-ffmpeg');
+
 const authCtr= require('../controllers/auth_controller');
 const faceCtr= require('../controllers/face_controller');
 const $check_token = require('../middlewares/check_token');
+
 
 router.get('/auth/*',$check_token);
 router.post('/auth/*',$check_token);
@@ -99,7 +108,6 @@ router.get('/auth/device_list',(req, res) => {
     faceCtr.select_Device(storeId,userId).then((data) => {
         res.json(data)
     })
-
 })
 router.post('/auth/update_info',function (req, res) {
     let id=req.userInfo.data.id;
@@ -118,6 +126,37 @@ router.post('/auth/update_pwd',function (req, res) {
     faceCtr.update_Pwd({id:id,...req.body}).then(data => {
         res.json(data)
     })
+});
+router.get('/auth/rtmp',function (req, res) {
+    let userId=req.userInfo.data.id;
+    faceCtr.select_Device(null,userId).then((data) => {
+        let ary=data.data;
+        for (let i=0;i<ary.length;i++){
+            console.log(data)
+        }
+        res.json(data)
+    })
+    // console.log(hostName,IPv4)
+    // const hlsPath='http://szpaasalihlsgw.lechange.cn:9001/LCO/4F07C7BPAGBAA7E/0/1/20190309161102/dev_20190309161102_47ffk2lp7pi6b44l.m3u8';
+    // const outPath='rtmp://'+IPv4+'/live/'+req.userInfo.data.username;
+    //  new ffmpeg({ source: hlsPath, timeout: 0 })
+    //     .addOption('-vcodec', 'libx264')
+    //     .addOption('-acodec', 'aac')
+    //     .addOption('-crf', 26)
+    //     .addOption('-aspect', '640:360')
+    //     .addOption('-f', 'flv')
+    //     .withSize('640x360')
+    //     .on('start', function(commandLine) {
+    //         console.log('Query : ' + commandLine);
+    //     })
+    //     .on('error', function(err) {
+    //         console.log('Error: ' + err.message);
+    //     })
+    //     .output(outPath, function(stdout, stderr) {
+    //         console.log('Convert complete' +stdout)
+    //     })
+    //     .run()
+
 });
 
 module.exports = router;

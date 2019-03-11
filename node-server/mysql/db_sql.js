@@ -43,7 +43,7 @@ module.exports = {
         },
         update_info:function(obj){
             const {id, name, tel, address} = obj;
-            return 'UPDATE admin_user set `name`="'+name+'",`tel`="'+tel+'",`address`="'+address+'"  where id='+id;
+            return 'UPDATE admin_user set `name`="'+name+'",`tel`="'+tel+'",`address`="'+address+'"  where id='+id+' and `type`=1 and status=1';
         },
         check_name: function (username) {
             return 'SELECT  count(id) as num  FROM admin_user where username="' + username + '" and type=1 order by id desc';
@@ -153,7 +153,7 @@ module.exports = {
             return 'SELECT  *  FROM store_list where userId=' + id + ' order by id desc';
         },
         store_del:function (id) {
-            return 'DELETE FROM  store_list where id=' + id;
+            return 'DELETE FROM  store_list where id=' + id+';DELETE FROM  device_list where storeId=' + id;
         },
         store_add:function (obj) {
             const {userId, name, address,start_time,end_time} = obj;
@@ -163,17 +163,29 @@ module.exports = {
             return 'DELETE FROM  device_list where id=' + id;
         },
         device_list:function (storeId,userId) {
-            let sql='';
+            let sql='',sql_user='',sql_store='';
             if(userId){
-                sql=' and userId='+userId;
+                sql_user='userId='+userId;
             }
-            let str= 'SELECT  *  FROM device_list where storeId=' + storeId + ' ' +sql+' order by id desc';
+            if(storeId){
+                sql_store='storeId='+storeId;
+            }
+            if(sql_store&&sql_user){
+                sql=sql_store+' and '+sql_user;
+            }else{
+                sql=sql_store+sql_user;
+            }
+            let str= 'SELECT  *  FROM device_list where ' + sql +' order by id desc';
             //console.log(str);
             return str;
         },
         device_add:function (obj) {
-            const {userId, name, storeId,type} = obj;
-            return 'INSERT INTO device_list (userId,name,`type`,storeId) VALUES ('+userId+',"'+name+'","'+type+'",'+storeId+')' ;
+            const {userId, name, storeId,type,hls} = obj;
+            return 'INSERT INTO device_list (userId,name,`type`,storeId,hls) VALUES ('+userId+',"'+name+'","'+type+'",'+storeId+',"'+hls+'")' ;
+        },
+        device_edit:function (obj) {
+            const {name,type,hls,id} = obj;
+            return 'update device_list set `name`="'+name+'",`type`="'+type+'",hls="'+hls+'" where id='+id;
         },
         add_history:function () {
             return 'INSERT INTO  `myDataBase`.`store_histroy` (`number`,`userId`,`storeId`)  SELECT count(*) as number,c.storeId,c.userId FROM (SELECT * FROM  myDataBase.users_log where   DATE_FORMAT(dateTime,"%m-%d-%Y")=DATE_FORMAT(now(),"%m-%d-%Y")  order by id desc) as c group by c.userId'

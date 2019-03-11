@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require("fs");
-
+const http = require('http');
+const qs = require('querystring');
 /**
  * 文件遍历方法
  * @param filePath 需要遍历的文件路径
@@ -40,10 +41,33 @@ module.exports = {
         });
     },
     fileDelSave:function(fileRsePath,newImgName,base64Img) {
-        // console.log(fileRsePath, newImgName)
         mkdirs(fileRsePath,()=>{
             saveImg(fileRsePath+'/'+newImgName, base64Img)
         })
+    },
+    sendPost:function (url,post_data,callback) {
+        let content = qs.stringify(post_data);
+        let options = {
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            }
+        };
+        const req = http.request(options, function (res) {
+            console.log('STATUS: ' + res.statusCode);
+            console.log('HEADERS: ' + JSON.stringify(res.headers));
+            res.setEncoding('utf8');
+            res.on('data', function (chunk) {
+                callback(chunk)
+            });
+        });
+        req.on('error', function (e) {
+            console.log('problem with request: ' + e);
+            callback(e)
+        });
+        req.write(content);
+        req.end();
     }
 }
  function saveImg(name, base64) {

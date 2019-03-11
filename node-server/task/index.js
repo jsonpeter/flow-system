@@ -27,9 +27,8 @@ const watcher = chokidar.watch(filePath, {
 });
 watcher.on('add', async (imgPath,event) => {
    let tmp = imgPath.substr(filePath.length+1);
-   let findIDary=tmp.substr(0,tmp.indexOf('/')).split('&');
+   let findIDary=tmp.substr(0,tmp.indexOf('/')).split('-');
    if(findIDary.length!==3){
-
        return;
    }
    let userId = findIDary[0], storeId = findIDary[1], deviceId = findIDary[2];

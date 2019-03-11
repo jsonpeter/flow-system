@@ -42,6 +42,13 @@ module.exports= {
             })
         })
     },
+    Device_Edit:function (obj) {
+        return new Promise((r)=>{
+            DBhelper.execute_sql(DBsql.store.device_edit(obj),(data)=>{
+                r(data)
+            })
+        })
+    },
     Device_List:function (storeId) {
         return new Promise((r)=>{
             DBhelper.execute_sql(DBsql.store.device_list(storeId),(data)=>{
