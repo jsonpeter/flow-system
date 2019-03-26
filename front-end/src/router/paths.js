@@ -5,6 +5,11 @@
  */
 import Main from '@/views/Main'
 export default [
+    {
+        path: '/camera2',
+        name: 'Camera2',
+        component: () => import('@/views/Camera')
+    },
     { path: '/', component: () => import('@/views/Login'), redirect: '/login', hidden: true },
     { path: '/login', component: () => import('@/views/Login'), hidden: true },
     {
@@ -12,25 +17,25 @@ export default [
         component: Main,
         redirect: '/main/home',
         children: [
-            {path: '/main/home', component: () => import('@/views/Dashboard'), name: 'dashboard'},
+            {path: '/main/home', component: () => import('@/views/Dashboard'), name: '报表展示'},
             {
                 path: '/user-profile',
-                name: 'User Profile',
+                name: '商户信息',
                 component: () => import('@/views/UserProfile')
             },
             {
                 path: '/table-list',
-                name: 'Table List',
+                name: '到店人群',
                 component: () => import('@/views/TableList')
             },
             {
                 path: '/camera',
-                name: 'Camera',
+                name: '实时监控',
                 component: () => import('@/views/Camera')
             },
             {
                 path: '/password',
-                name: 'Password',
+                name: '密码修改',
                 component: () => import('@/views/Password')
             }
         ]

@@ -75,6 +75,27 @@ export function dateFormat(time, type) {
     }
     return str
 }
+export function  transType(str) {
+    let s = '';
+    switch (str) {
+        case 'black':
+            s = '黑名单';
+            break;
+        case 'white':
+            s = '白名单';
+            break;
+        case 'vip':
+            s = 'vip';
+            break;
+        case 'normal':
+            s = '普通';
+            break;
+        default:
+            s = '未知';
+            break;
+    }
+    return s;
+}
 export function day30Before(){
     //获取三十天前日期
     let lw = new Date( new Date() - 1000 * 60 * 60 * 24 * 30);//最后一个数字30可改，30天的意思

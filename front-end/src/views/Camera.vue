@@ -1,76 +1,73 @@
-<style lang="scss">
-    #core-view {
-        width: 100%;
-        height: 100%;
-    }
+<style scoped lang="scss">
+   .camera-video{
+       .flex{ height: 50%;
+        video{ width: 100%; height: 100%;}
+           .video-js{ margin: 0 auto;}
+       }
+   }
 </style>
 
 <template>
-    <v-container
-            fill-height
-            fluid
-            grid-list-xl
-    >
+    <v-container  fill-height  fluid  grid-list-xl>
         <core-loading :show="loading" />
-        <v-layout wrap>
-            <v-flex>
-                <video id="my-video" ref="myVideo" class="video-js" poster="videojs/eguidlogo.png" width="800" height="600">
-                    <source src='http://szpaasalihlsgw.lechange.cn:9001/LCO/4F07C7BPAGBAA7E/0/1/20190307213617/dev_20190307213617_kcznsfgk4xk2lpns.m3u8'  type="application/x-mpegURL"/>
+        <v-layout wrap class="camera-video">
+            <v-flex v-for="(item,idx) in videoData" :id="'video-box'+idx" :key="idx" md6 xs12>
+                <video :id="'myvideo'+idx" poster="/img/noimg.png" class="video-js" controls>
+                    <source :src='item.path'  type="application/x-mpegURL"/>
                 </video>
             </v-flex>
         </v-layout>
     </v-container>
 </template>
 <script>
-    import 'video.js/dist/video-js.css'
-    import videojs from 'video.js'
-    import 'videojs-contrib-hls'
     import $http from  '../plugins/axios'
+    import videojs from 'video.js'
+    window.videojs=videojs;
+    import 'videojs-contrib-hls'
     export default {
         components: {
 
         },
         data() {
             return {
-                loading:true
+                loading:false,
+                videoData:[
+                    {name:'测试视频地址1',path:'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'},
+                    {name:'测试视频地址2',path:'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'},
+                    {name:'测试视频地址3',path:'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'},
+                    {name:'测试视频地址4',path:'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'}
+                ]
             }
         },
         mounted(){
-            this.getLivePath();
-        //    console.log(this.$refs.myVideo)
-        //     var options = {
-        //         techOrder: ['flash'],
-        //         autoplay:true,
-        //         language: "zh-CN",
-        //         controls: false,
-        //         bigPlayButton: true
-        //     };
-        //    const that=this;
-        //     videojs('my-video', options, function onPlayerReady() {
-        //         videojs.log('Your player is ready!');
-        //         that.loading=false
-        //         // In this context, `this` is the player that was created by Video.js.
-        //         this.play();
-        //
-        //         // How about an event listener?
-        //         this.on('ended', function() {
-        //             videojs.log('Awww...over so soon?!');
-        //         });
-        //     });
-            videojs('my-video', {
-                bigPlayButton: false,
-                textTrackDisplay: false,
-                posterImage: true,
-                errorDisplay: false,
-                controlBar: true
-            }, function () {
-                this.play()
+         //this.getLivePath();
+            this.$nextTick(()=>{
+                console.log('数据已经更新')
+                this.livePlayer(this.videoData);
             })
-         },
+        },
         methods:{
             getLivePath(){
                 $http.get('/auth/rtmp').then(res=>{
-                    console.log(res)
+                    console.log(res);
+                    this.videoData=res;
+                })
+            },
+            livePlayer(data){
+
+                data.map((item,index)=>{
+                    let elm='myvideo'+index;
+                    let player = window.videojs(elm,{
+                        autoplay:true,
+                        loadingSpinner: true
+                    },function () {
+                        let sizeElm=document.getElementById('video-box'+index);
+                        let _width=sizeElm.offsetWidth-24;
+                        player.width(_width);
+                        player.height(_width/2);
+                        console.error('play',elm)
+                        player.play();
+                    });
                 })
             }
         }

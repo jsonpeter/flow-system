@@ -41,6 +41,13 @@ module.exports= {
             })
         })
     },
+    store_Histroy_persons(storeId,userId){
+        return new Promise((r)=>{
+            DBhelper.execute_sql(DBsql.face.select_all_person(storeId,userId),(data)=>{
+                r(data)
+            })
+        })
+    },
     update_Info(options){
         return new Promise((r)=>{
             DBhelper.execute_sql(DBsql.admin.update_info(options),(data)=>{

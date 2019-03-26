@@ -11,9 +11,6 @@
                     return-object
                     single-line
             ></v-select>
-        <v-btn text color="green"  @click="()=>{changeStore()}">
-           刷新
-        </v-btn>
     </div>
 </template>
 
@@ -51,7 +48,7 @@
 </script>
 
 <style>
-    .store-select{ width:99%; text-align: right;position: absolute;z-index: 10;top:-5px; right: 2rem;}
+    .store-select{text-align: right;position: fixed;z-index: 11;top:5px; left: 10px;}
     .store-select .v-input { margin:0 20px; display: inline-block; width: 200px;}
 
 </style>

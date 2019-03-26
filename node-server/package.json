@@ -8,9 +8,9 @@
     "debug": "node /usr/local/Cellar/node/10.4.1/lib/node_modules/nodemon/bin/nodemon.js bin/www"
   },
   "baiduApi": {
-    "appid": "15386676",
-    "key": "QgOP4mww9MiBKm8P5TsELzeE",
-    "secret": "0ITQOM42gFELdoftX7p9B50twtq2w6gs"
+    "appid": "15844600",
+    "key": "xGj2NidT015a4KQl9ZP1bM6K",
+    "secret": "xvnSwT39RdGoWKiqT9aKSdfBSyLjF8Dg"
   },
   "mysql": {
     "host": "localhost",

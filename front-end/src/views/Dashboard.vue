@@ -1,4 +1,14 @@
 <style lang="scss">
+  .v-card__title {
+    margin: 0;
+    padding: 10px;
+    background: #242424;
+    box-shadow: 1px 1px 1px #333333;
+  }
+  .v-card__text{
+    padding:.5rem;
+    margin: 0;
+  }
   .head-card{
     width: 100%;
     .v-card--material-chart{
@@ -8,12 +18,13 @@
       text-align: center;
       width: 100%;
     }
-    .v-card__text,.v-card__title{
-      margin: 0;
-      padding:1rem 0 0 0;
-    }
-    .v-card__text{
-      padding-bottom: 1rem;
+  }
+  .swiper-container {
+    height: 80px;
+    .swiper-slide, .swiper-slide img {
+      vertical-align: middle;
+      height: 100%;
+      text-align: center;
     }
   }
 </style>
@@ -23,12 +34,22 @@
     fluid
     grid-list-xl
   >
+    <core-store-list @changeStore="setStoreId"></core-store-list>
     <core-loading :show="loading" />
     <v-layout wrap>
-      <v-flex md12>
-        <core-store-list @changeStore="setStoreId"></core-store-list>
+      <v-flex md3>
+        <v-card class="head-card">
+          <v-card-title primary-title color="green">
+            <div>总到店数</div>
+          </v-card-title>
+          <v-card-text>
+            <div class="headline text-success">
+              {{numberObj.num.all}}
+            </div>
+          </v-card-text>
+        </v-card>
       </v-flex>
-      <v-flex md4>
+      <v-flex md3>
         <v-card class="head-card">
           <v-card-title primary-title color="green">
             <div>今日到店数</div>
@@ -40,7 +61,7 @@
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex md4>
+      <v-flex md3>
         <v-card class="head-card">
           <v-card-title primary-title>
             <div>今日新增数</div>
@@ -52,7 +73,7 @@
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex md4>
+      <v-flex md3>
         <v-card class="head-card">
           <v-card-title primary-title>
             <div>今日老顾客</div>
@@ -64,9 +85,23 @@
           </v-card-text>
         </v-card>
       </v-flex>
+      <v-flex md12>
+        <v-card>
+          <v-card-title>今日最新到店</v-card-title>
+        <!-- swiper -->
+          <v-card-text>
+        <swiper :options="swiperOption">
+          <swiper-slide v-for="item in swiperData" :key="item.id">
+           <img :src="baseURL+item.faceId+'.jpg'"  v-on:error.once="moveErrorImg($event)"  class="img" v-cloak/>
+          </swiper-slide>
+        </swiper>
+          </v-card-text>
+        </v-card>
+      </v-flex>
       <v-flex xs12
               md6>
         <v-card class="v-card--material-chart">
+          <v-card-title>最近30天性别统计</v-card-title>
           <v-card-text>
             <div ref="myChartPie" class="echarts sm"></div>
           </v-card-text>
@@ -75,6 +110,7 @@
       <v-flex xs12
               md6>
         <v-card class="v-card--material-chart">
+          <v-card-title>最近30天年龄统计</v-card-title>
           <v-card-text>
             <div ref="myChartBar" class="echarts sm"></div>
           </v-card-text>
@@ -83,6 +119,7 @@
       </v-flex>
       <v-flex md12>
         <v-card class="v-card--material-chart">
+          <v-card-title>最近30天客流统计</v-card-title>
           <v-card-text>
             <div ref="myChartLine" class="echarts lg"></div>
           </v-card-text>
@@ -114,16 +151,51 @@
 <script>
 import * as _utilService from "../utils";
 import $http from  '../plugins/axios'
+import 'swiper/dist/css/swiper.css'
+import { swiper, swiperSlide } from 'vue-awesome-swiper'
 export default {
     data() {
         return {
             resTimer:null,
             snackbar:false,
+            swiperData:[],
+            swiperOption: {
+                grabCursor: true,
+                loop: true,
+                slidesPerView: 12,
+                spaceBetween: 0,
+                autoplay: {
+                    delay: 2000,
+                    disableOnInteraction: false
+                },
+                breakpoints: {
+                    1024: {
+                        slidesPerView: 8,
+                        spaceBetween: 20
+                    },
+                    768: {
+                        slidesPerView: 3,
+                        spaceBetween: 30
+                    },
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20
+                    },
+                    320: {
+                        slidesPerView: 1,
+                        spaceBetween: 10
+                    }
+                }
+            },
             pagination: {size: 5, page: 1},
             loading: true,
             day30Data: [],
             numberObj: {num:{all_person: 0, new_person: 0},gender:{male:0,fmale:0}}
         }
+    },
+    components: {
+        swiper,
+        swiperSlide
     },
     computed: {
         baseURL(){
@@ -134,6 +206,9 @@ export default {
         }
     },
     methods: {
+        moveErrorImg(event) {
+            event.target.src = "../../img/noimg.png";
+        },
         setStoreId(id){
             if(id) {
                 this.storeId = id;
@@ -153,7 +228,6 @@ export default {
 
             return {
                 title: {
-                    text: '最近30天客流统计',
                     textStyle: {
                         color: '#ccc'
                     }
@@ -168,6 +242,7 @@ export default {
                     }
                 },
                 grid: {
+                    top:'0',
                     left: '3%',
                     right: '4%',
                     bottom: '3%',
@@ -239,7 +314,6 @@ export default {
         setPieData(female,male){
           return {
               title: {
-                  text: '最近30天性别统计',
                   textStyle: {
                       color: '#ccc'
                   }
@@ -287,7 +361,6 @@ export default {
             })
           return {
               title: {
-                  text: '最近30天年龄统计',
                   textStyle: {
                       color: '#ccc'
                   }
@@ -300,7 +373,7 @@ export default {
                   }
               },
               grid: {
-                  top:'25%',
+                  top:'0',
                   left: '1%',
                   right: '1%',
                   bottom: '0',
@@ -364,9 +437,14 @@ export default {
                     let myChartPie = this.$echarts.init(this.$refs['myChartPie']);
                     const {female,male} =this.numberObj.gender;
                     myChartPie.setOption(this.setPieData(female,male))
+
                 }
-            },
-                {
+            },{
+                path: '/auth/select_today', callback: (res) => {
+                    this.swiperData= res;
+                    console.log(res)
+                }
+            },{
                 path: '/auth/store_histroy', callback: (res) => {
                     let myChartLine = this.$echarts.init(this.$refs['myChartLine'])
                     // 绘制折线图表

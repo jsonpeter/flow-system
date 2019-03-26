@@ -7,8 +7,6 @@ const router = express.Router();
 
 const moment = require('moment');
 const randomstring = require('randomstring');
-const crypto = require('crypto-js');
-const helpers= require('../tools/helpers');
 
 const ffmpeg = require('fluent-ffmpeg');
 
@@ -54,8 +52,26 @@ router.get('/auth/select_num',(req, res) => {
     }
     faceCtr.user_SelectNumber(options.storeId).then((data_num) => {
         faceCtr.store_Histroy_gender(options).then((data) => {
-            res.json({code:0,data:{num:data_num.data[0],gender:data.data[0]}})
+            faceCtr.store_Histroy_persons(options.storeId,options.userId).then((data_all) => {
+                res.json({code:0,data:{num:Object.assign(data_all.data[0],data_num.data[0]),gender:data.data[0]}})
+            })
         })
+
+    })
+})
+router.get('/auth/select_today',(req, res) => {
+    let options= {
+        storeId:req.query.storeId,
+        userId:req.userInfo.data.id,
+        type:'time',
+        limit:true,
+        size:20,
+        page:1,
+        startTime:req.query.endTime,
+        endTime:req.query.endTime
+    }
+    faceCtr.user_SelectPerson(options).then((data) => {
+        res.json(data)
     })
 })
 router.get('/auth/histroy_age',(req, res) => {
@@ -129,34 +145,37 @@ router.post('/auth/update_pwd',function (req, res) {
 });
 router.get('/auth/rtmp',function (req, res) {
     let userId=req.userInfo.data.id;
+    let ratio=req.query.ratio||'640x360';
     faceCtr.select_Device(null,userId).then((data) => {
-        let ary=data.data;
-        for (let i=0;i<ary.length;i++){
-            console.log(data)
-        }
+       // let ary=data.data;
+        // for (let i=0;i<ary.length;i++){
+        //     console.log(data);
+        //     //遍历每个设备，并推流
+        // }
+        //模拟测试
+        // const hlsPath='http://cctvcncw.v.wscdns.com/live/cctv3_1_914/playlist.m3u8';
+        // const outPath='rtmp://localhost:1935/live/'+req.userInfo.data.username+'/'+randomstring.generate();
+        // new ffmpeg({timeout: 2000 })
+        //     .input(hlsPath)
+        //     .input("./public/logo.png")
+        //     .addOption('-vcodec', 'libx264')
+        //     .addOption('-acodec', 'aac')
+        //     .addOption('-crf', 26)
+        //     .addOption('-f', 'flv')
+        //     .withSize(ratio)
+        //     .on('start', function(commandLine) {
+        //         console.log('Query : ' + commandLine);
+        //     })
+        //     .on('error', function(err) {
+        //         console.log('Error: ' + err.message);
+        //     })
+        //     .output(outPath, function(stdout, stderr) {
+        //         console.error('Convert complete' +stdout,outPath);
+        //     })
+        //     .run();
+        // let out=Object.assign(data,{rtmp:outPath,ratio:ratio})
         res.json(data)
     })
-    // console.log(hostName,IPv4)
-    // const hlsPath='http://szpaasalihlsgw.lechange.cn:9001/LCO/4F07C7BPAGBAA7E/0/1/20190309161102/dev_20190309161102_47ffk2lp7pi6b44l.m3u8';
-    // const outPath='rtmp://'+IPv4+'/live/'+req.userInfo.data.username;
-    //  new ffmpeg({ source: hlsPath, timeout: 0 })
-    //     .addOption('-vcodec', 'libx264')
-    //     .addOption('-acodec', 'aac')
-    //     .addOption('-crf', 26)
-    //     .addOption('-aspect', '640:360')
-    //     .addOption('-f', 'flv')
-    //     .withSize('640x360')
-    //     .on('start', function(commandLine) {
-    //         console.log('Query : ' + commandLine);
-    //     })
-    //     .on('error', function(err) {
-    //         console.log('Error: ' + err.message);
-    //     })
-    //     .output(outPath, function(stdout, stderr) {
-    //         console.log('Convert complete' +stdout)
-    //     })
-    //     .run()
-
 });
 
 module.exports = router;

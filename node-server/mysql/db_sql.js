@@ -53,7 +53,7 @@ module.exports = {
         select_person(_options) {
             let w_sql = '';
             if (_options.type === 'time') {
-                w_sql = 'date(dateTime) between date(' + _options.startTime + ') and date(' + _options.endTime + ') and';
+                w_sql = 'date(dateTime) between date("' + _options.startTime + '") and date("' + _options.endTime + '") and';
             }
             let s_sql = 'a.age,a.gender';
             let limit = '';
@@ -66,20 +66,25 @@ module.exports = {
             }
             //全部人员或今日进入 详情
             let str = 'SELECT ' + s_sql + ' FROM ' +
-                '(SELECT *  FROM  users_log  where ' + w_sql + ' storeId=' + Number(_options.storeId) + ' and id in(select max(id) from users_log group by faceId)) as b,' +
+                '(SELECT *  FROM  users_log  where ' + w_sql + '  userId='+_options.userId+' and storeId=' + Number(_options.storeId) + ' and id in (select max(id) from users_log group by faceId)) as b,' +
                 '(SELECT * FROM users_info) as a ' +
                 'where a.faceId=b.faceId order by b.id desc ' + limit;
-            // console.log('~~~',str)
+            // console.log('select_person--->',str)
+            return str;
+        },
+        select_all_person(storeId,userId){
+            let str= 'SELECT count(*) as `all` from (SELECT id FROM myDataBase.users_log where storeId=' + Number(storeId) + ' and userId='+userId+' group by faceId) AS b';
+           // console.log('select_all_person:',str)
             return str;
         },
         select_time_gender(_options) {
             let w_sql = '';
             if (_options.type === 'time') {
-                w_sql = 'date(dateTime) between date(' + _options.startTime + ') and date(' + _options.endTime + ') and';
+                w_sql = 'date(dateTime) between date("' + _options.startTime + '") and date("' + _options.endTime + '") and';
             }
             //全部人员或今日进入 详情
             let str = 'SELECT count(t.gender="male" or null) as male,count(t.gender="female" or null) as female FROM  (SELECT a.* FROM ' +
-                ' (SELECT *  FROM  users_log  where ' + w_sql + ' storeId=' + Number(_options.storeId) + ') as b, ' +
+                ' (SELECT *  FROM  users_log  where ' + w_sql + ' storeId=' + Number(_options.storeId) + ' and userId='+_options.userId+') as b, ' +
                 ' (SELECT * FROM users_info) as a where a.faceId=b.faceId) as t';
             // console.log(str)
             return str;
@@ -87,7 +92,7 @@ module.exports = {
         select_time_age(_options) {
             let w_sql = '';
             if (_options.type === 'time') {
-                w_sql = 'date(dateTime) between date(' + _options.startTime + ') and date(' + _options.endTime + ') and';
+                w_sql = 'date(dateTime) between date("' + _options.startTime + '") and date("' + _options.endTime + '") and';
             }
             //全部人员或今日进入 详情
             let str = 'select age_temp as name,count(*) as value from (select age,case' +
@@ -114,6 +119,9 @@ module.exports = {
                 ' (SELECT faceId,`type` FROM users_info ) as a where b.faceId=a.faceId and a.type!="white" ) as AllPerson';
             // console.log('今日新增人员',str)
             return str
+        },
+        select_new_all_info(storeId){
+
         },
         select_store_histroy(storeId) {
             let str='select * from store_histroy  where storeId=' + Number(storeId)

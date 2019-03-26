@@ -127,6 +127,7 @@ export default {
 
 <style lang="scss">
   #app-drawer {
+    z-index: 99;
     .v-list__tile {
       border-radius: 4px;
 

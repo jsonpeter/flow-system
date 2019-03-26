@@ -1,6 +1,7 @@
 <template>
   <v-content>
     <div id="core-view">
+      <core-toolbar />
       <v-fade-transition mode="out-in">
         <router-view />
       </v-fade-transition>
@@ -11,13 +12,10 @@
 
 <script>
 
-export default {
-
-}
 </script>
 
 <style>
 #core-view {
-  padding-bottom: 100px;
+  padding-top: 3rem;
 }
 </style>

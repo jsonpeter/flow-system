@@ -38,7 +38,7 @@
               slot-scope="{ item,index }" class="face-table">
               <td>{{ index+1 }}</td>
               <td><img :src="baseURL+item.faceId+'.jpg'"  v-on:error.once="moveErrorImg($event)"  class="img" v-cloak></td>
-              <td :class="'color-'+item.type">{{ transType(item.type) }}</td>
+              <td :class="'color-'+item.type">{{utilService.transType(item.type) }}</td>
               <td>{{ item.age }}</td>
               <td>{{ item.glasses==='none'?'否':'是' }}</td>
               <td :class="item.gender">{{ item.gender==='male'?'男':'女' }}</td>
@@ -335,27 +335,6 @@ export default {
             }).catch(() => {
                 this.loading = false;
             });
-        },
-        transType(str) {
-            let s = '';
-            switch (str) {
-                case 'black':
-                    s = '黑名单';
-                    break;
-                case 'white':
-                    s = '白名单';
-                    break;
-                case 'vip':
-                    s = 'vip';
-                    break;
-                case 'normal':
-                    s = '普通';
-                    break;
-                default:
-                    s = '未知';
-                    break;
-            }
-            return s;
         }
     }
 }

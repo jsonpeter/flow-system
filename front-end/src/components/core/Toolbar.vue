@@ -30,13 +30,6 @@ import {
 
 export default {
     data: () => ({
-        notifications: [
-            'Mike, John responded to your email',
-            'You have 5 new tasks',
-            'You\'re now a friend with Andrew',
-            'Another Notification',
-            'Another One'
-        ],
         title: null,
         responsive: false,
         responsiveInput: false
@@ -74,12 +67,14 @@ export default {
 </script>
 
 <style>
+  .head-tool{position: fixed;top:0;right: 0;}
   .theme--dark .head-title{
     color: #ffffff;
   }
   .head-title{
     color: #333;
   }
+  #core-toolbar{position: fixed;z-index: 1;}
   #core-toolbar a {
     text-decoration: none;
   }
