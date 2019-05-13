@@ -1,5 +1,14 @@
 <style scoped lang="scss">
    .camera-video{
+       .video-js{
+           .vjs-big-play-button{
+               left:0;
+               right:0;
+               bottom:0;
+               top:0;
+               margin: auto;
+           }
+       }
        .flex{ height: 50%;
         video{ width: 100%; height: 100%;}
            .video-js{ margin: 0 auto;}
@@ -13,7 +22,7 @@
         <v-layout wrap class="camera-video">
             <v-flex v-for="(item,idx) in videoData" :id="'video-box'+idx" :key="idx" md6 xs12>
                 <video :id="'myvideo'+idx" poster="/img/noimg.png" class="video-js" controls>
-                    <source :src='item.path'  type="application/x-mpegURL"/>
+                    <source :src='item.hls'  type="application/x-mpegURL"/>
                 </video>
             </v-flex>
         </v-layout>
@@ -22,7 +31,7 @@
 <script>
     import $http from  '../plugins/axios'
     import videojs from 'video.js'
-    window.videojs=videojs;
+    import 'video.js/dist/video-js.min.css'
     import 'videojs-contrib-hls'
     export default {
         components: {
@@ -32,32 +41,33 @@
             return {
                 loading:false,
                 videoData:[
-                    {name:'测试视频地址1',path:'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'},
-                    {name:'测试视频地址2',path:'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'},
-                    {name:'测试视频地址3',path:'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'},
-                    {name:'测试视频地址4',path:'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'}
-                ]
+                       {name:'测试视频地址1',hls:'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'},
+                      {name:'测试视频地址2',hls:'http://open.ys7.com/openlive/f01018a141094b7fa138b9d0b856507b.m3u8'}
+                    ]
             }
         },
+        beforeDestroy(){
+            videojs.dispose();
+        },
         mounted(){
-         //this.getLivePath();
-            this.$nextTick(()=>{
-                console.log('数据已经更新')
-                this.livePlayer(this.videoData);
-            })
+           // this.getLivePath();
+            this.livePlayer(this.videoData);
         },
         methods:{
             getLivePath(){
                 $http.get('/auth/rtmp').then(res=>{
-                    console.log(res);
-                    this.videoData=res;
+                   // this.videoData=res.data;
+                    this.$nextTick(()=>{
+                        console.log('数据已经更新')
+                        this.livePlayer(this.videoData);
+                    })
                 })
             },
             livePlayer(data){
-
                 data.map((item,index)=>{
                     let elm='myvideo'+index;
-                    let player = window.videojs(elm,{
+                    // window.videojs=videojs;
+                    let player = videojs(elm,{
                         autoplay:true,
                         loadingSpinner: true
                     },function () {
@@ -65,7 +75,6 @@
                         let _width=sizeElm.offsetWidth-24;
                         player.width(_width);
                         player.height(_width/2);
-                        console.error('play',elm)
                         player.play();
                     });
                 })

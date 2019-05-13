@@ -18,6 +18,7 @@ import echarts from 'echarts'
 import axios from '@/plugins/axios'
 
 Vue.prototype.$echarts = echarts;
+Vue.prototype.$serverPath = 'http://localhost:3100';
 Vue.prototype.$http = axios;
 // Sync store with router
 sync(store, router)

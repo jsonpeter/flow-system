@@ -13,16 +13,16 @@ module.exports= {
            })
        })
     },
-    user_SelectNumber:function (storeId) {
+    user_SelectNumber:function (storeId,userId) {
         return new Promise((r)=>{
-            DBhelper.execute_sql(DBsql.face.select_new_all(storeId),(data)=>{
+            DBhelper.execute_sql(DBsql.face.select_new_all(storeId,userId),(data)=>{
                 r(data)
             })
         })
     },
-    store_Histroy(storeId){
+    store_Histroy(storeId,userId,type){
         return new Promise((r)=>{
-            DBhelper.execute_sql(DBsql.face.select_store_histroy(storeId),(data)=>{
+            DBhelper.execute_sql(DBsql.face.select_store_histroy(storeId,userId,type),(data)=>{
                 r(data)
             })
         })

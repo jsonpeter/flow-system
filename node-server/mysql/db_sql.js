@@ -69,7 +69,7 @@ module.exports = {
                 '(SELECT *  FROM  users_log  where ' + w_sql + '  userId='+_options.userId+' and storeId=' + Number(_options.storeId) + ' and id in (select max(id) from users_log group by faceId)) as b,' +
                 '(SELECT * FROM users_info) as a ' +
                 'where a.faceId=b.faceId order by b.id desc ' + limit;
-            // console.log('select_person--->',str)
+             console.log(_options,'select_person--->'+str)
             return str;
         },
         select_all_person(storeId,userId){
@@ -103,28 +103,32 @@ module.exports = {
                 ' when age between 41 and 50 then "41-50"' +
                 ' when age >50 then "50"' +
                 ' end as age_temp from (select age from  users_info where faceid in ' +
-                '(SELECT faceId FROM users_log where ' + w_sql + ' storeId=' + Number(_options.storeId) + ' group by faceId)) as a ' +
+                '(SELECT faceId FROM users_log where ' + w_sql + ' storeId=' + Number(_options.storeId) + ' and userId='+_options.userId+' group by faceId)) as a ' +
                 ') t_user group by age_temp';
             // console.log('select_time_age',str)
             return str;
         },
-        select_new_all(storeId) {
+        select_new_all(storeId,userId) {
             //今日新增人员,所有人员
             let str='SELECT * from (SELECT count(*) as new_person FROM ' +
-                ' (SELECT *  FROM  users_log  where  storeId=' + Number(storeId) + ' and id in ' +
+                ' (SELECT *  FROM  users_log  where storeId=' + storeId + ' and userId='+userId+' and id in ' +
                 ' (select max(id) from users_log group by faceId)) as b, ' +
                 ' (SELECT faceId,`dateTime`,`type` FROM users_info) as a ' +
                 ' where a.faceId=b.faceId and a.type!="white" and  date(a.dateTime)=date(b.dateTime) and date(a.dateTime)=date(now())) as NewPerson,' +
-                ' (SELECT count(*) as all_person FROM (SELECT * FROM users_log where date(dateTime)=date(now()) and storeId=' + storeId + ' group by faceId) as b,' +
+                ' (SELECT count(*) as all_person FROM (SELECT * FROM users_log where date(dateTime)=date(now()) and storeId=' + storeId + ' and userId='+userId+'  group by faceId) as b,' +
                 ' (SELECT faceId,`type` FROM users_info ) as a where b.faceId=a.faceId and a.type!="white" ) as AllPerson';
-            // console.log('今日新增人员',str)
+             console.log('今日新增人员',str)
             return str
         },
         select_new_all_info(storeId){
 
         },
-        select_store_histroy(storeId) {
-            let str='select * from store_histroy  where storeId=' + Number(storeId)
+        select_store_histroy(storeId,userId,type) {
+            let sql='*';
+            if(type){
+                sql='sum(`number`) as histroy_all'
+            }
+            let str='select '+sql+' from store_histroy  where userId='+userId+' and storeId=' + Number(storeId)
             // console.log(str)
             return str;
         },

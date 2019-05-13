@@ -48,7 +48,10 @@
 </script>
 
 <style>
-    .store-select{text-align: right;position: fixed;z-index: 11;top:5px; left: 10px;}
+    .store-select{text-align: right;position: fixed;z-index: 11;top:5px; right: 10px;}
     .store-select .v-input { margin:0 20px; display: inline-block; width: 200px;}
+    @media screen and (max-width: 800px){
+        .store-select {left: 10px;}
+    }
 
 </style>

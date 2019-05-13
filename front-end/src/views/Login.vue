@@ -82,6 +82,12 @@
                 v => (v && v.length >= 6) || '密码不得小于6个字符'
             ]
         }),
+        mounted(){
+            // const socket = io(this.$serverPath);
+            // socket.on('userType', function (data) {
+            //     console.error(data);
+            // })
+        },
         methods: {
             validate() {
                 if (this.$refs.form.validate()) {

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
+    "dev": "./bin/www",
     "server": "forever start -a -l forever.log -e err.log ./bin/www",
     "debug": "node /usr/local/Cellar/node/10.4.1/lib/node_modules/nodemon/bin/nodemon.js bin/www"
   },
@@ -46,6 +46,7 @@
     "nodemon": "^1.18.7",
     "randomstring": "^1.1.5",
     "serve-favicon": "~2.4.2",
+    "socket.io": "^2.2.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

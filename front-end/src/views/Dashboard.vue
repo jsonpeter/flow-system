@@ -44,7 +44,7 @@
           </v-card-title>
           <v-card-text>
             <div class="headline text-success">
-              {{numberObj.num.all}}
+              {{numberObj.num.histroy_all+numberObj.num.all_person}}
             </div>
           </v-card-text>
         </v-card>

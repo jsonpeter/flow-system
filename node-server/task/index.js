@@ -1,6 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 const colors = require('colors');
+
+
+
 colors.setTheme({
     silly: 'rainbow',
     input: 'grey',
@@ -19,7 +22,6 @@ const faceCtr= require('../controllers/face_controller');
 // const filePath = '/ftp/test/';
 const filePath = path.resolve('public/face/');
 let save_path = path.resolve('public/person/');
-
 const watcher = chokidar.watch(filePath, {
     interval: 500,
     awaitWriteFinish:true,
@@ -59,8 +61,9 @@ watcher.on('add', async (imgPath,event) => {
                     //更新时间
                     faceId = seach_res.result.user_list[0].user_id;
                     addUserLog(save_path_id, faceId,userId, storeId,deviceId, base64Img);
-                    //检测状态
+                    //检测状态报警
                     faceCtr.user_CheckType(faceId,userId,storeId, (res) => {
+                       // socket.emit('userType', {type: res.data[0].type});
                         console.log(colors.info('类别',res.data[0].type));
                     })
                 } else {
@@ -108,7 +111,8 @@ function addUserLog(save_path_id,faceId,userId, storeId,deviceId,base64Img) {
                 helpers.fileDelSave(save_path_id, newImgName, base64Img);
                 console.log('日志记录成功')
             });
-
+        }else{
+            console.log(colors.input('并发不处理！'));
         }
     })
 

@@ -30,6 +30,7 @@ router.get('/auth/select',(req, res) => {
         type:req.query.type,
         page:req.query.page,
         select:'count',
+        userId:req.userInfo.data.id,
         limit:false,
         size:req.query.size
     }
@@ -50,9 +51,9 @@ router.get('/auth/select_num',(req, res) => {
         startTime:req.query.startTime,
         endTime:req.query.endTime
     }
-    faceCtr.user_SelectNumber(options.storeId).then((data_num) => {
+    faceCtr.user_SelectNumber(options.storeId,options.userId).then((data_num) => {
         faceCtr.store_Histroy_gender(options).then((data) => {
-            faceCtr.store_Histroy_persons(options.storeId,options.userId).then((data_all) => {
+            faceCtr.store_Histroy(options.storeId,options.userId,true).then((data_all) => {
                 res.json({code:0,data:{num:Object.assign(data_all.data[0],data_num.data[0]),gender:data.data[0]}})
             })
         })
@@ -77,6 +78,7 @@ router.get('/auth/select_today',(req, res) => {
 router.get('/auth/histroy_age',(req, res) => {
     let options= {
         storeId:req.query.storeId,
+        userId:req.userInfo.data.id,
         startTime:req.query.startTime,
         endTime:req.query.endTime
     }
@@ -88,6 +90,7 @@ router.get('/auth/histroy_age',(req, res) => {
 router.get('/auth/select_histroy',(req, res) => {
     let options= {
         storeId:req.query.storeId,
+        userId:req.userInfo.data.id,
         type:'all',
         limit:false,
         startTime:req.query.startTime,
@@ -99,21 +102,22 @@ router.get('/auth/select_histroy',(req, res) => {
 })
 
 router.get('/auth/store_histroy',(req, res) => {
-    let id=req.query.storeId;
-    faceCtr.store_Histroy(id).then((data) => {
+    let storeId=req.query.storeId;
+    let userId=req.userInfo.data.id;
+    faceCtr.store_Histroy(storeId,userId).then((data) => {
         res.json(data)
     })
 })
 router.get('/auth/store_list',(req, res) => {
-    let id=req.userInfo.data.id;
-    faceCtr.select_store(id).then((data) => {
+    let userId=req.userInfo.data.id;
+    faceCtr.select_store(userId).then((data) => {
         res.json(data)
     })
 
 })
 router.get('/auth/userinfo',(req, res) => {
-    let id=req.userInfo.data.id;
-    faceCtr.select_Info(id).then((data) => {
+    let userId=req.userInfo.data.id;
+    faceCtr.select_Info(userId).then((data) => {
         res.json(data)
     })
 
