@@ -1,6 +1,8 @@
 # 基于百度识别API的客流分析统计系统
 
-![version](https://img.shields.io/badge/version-1.0.0-blue.svg) 
+![](https://img.shields.io/github/issues/jsonpeter/flow-system)
+![](https://img.shields.io/github/forks/jsonpeter/flow-system)
+![](https://img.shields.io/github/stars/jsonpeter/flow-system)
 
 - [UI框架预览](https://demos.creative-tim.com/vuetify-material-dashboard)
 
