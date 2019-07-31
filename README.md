@@ -1,4 +1,5 @@
 # 基于百度识别API的客流分析统计系统
+### 推荐使用大华或海康人脸抓拍摄像头
 
 ![](https://img.shields.io/github/issues/jsonpeter/flow-system)
 ![](https://img.shields.io/github/forks/jsonpeter/flow-system)
